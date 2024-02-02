@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-import { supabase } from "@/lib/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/database.types";
 import { useState } from "react";
@@ -43,8 +42,7 @@ const useAuth = () => {
         console.log(signInError);
         throw signInError;
       }
-
-      await router.push("/");
+      await router.push("/home");
     } catch (error) {
       alert("エラーが発生しました");
     }

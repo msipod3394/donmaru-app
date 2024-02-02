@@ -3,8 +3,7 @@ import { extendTheme } from "@chakra-ui/react";
 import type { StyleFunctionProps } from "@chakra-ui/styled-system";
 
 const base = {
-  // baseBg: "#F13B3A",
-  baseBg: "#FFF",
+  baseBg: "#F13B3A",
   baseText: "#222222",
   primary: "#337ab7",
   success: "#198754",
@@ -56,18 +55,29 @@ const theme = extendTheme({
       variants: {
         md: {
           bg: "#FFF",
-          fontSize: "md",
+          fontSize: "2xl",
           borderRadius: "full",
-          border: "1px solid #000",
-          padding: ".5rem",
+          border: "3px solid #000",
+          padding: "1rem",
         },
-        // md: {
-        //   bg: "#FFF",
-        //   fontSize: "2xl",
-        //   borderRadius: "full",
-        //   border: "3px solid #000",
-        //   padding: "1rem",
-        // },
+      },
+      defaultProps: {
+        size: "xl", // default is md
+        variant: "md", // default is solid
+      },
+    },
+    Link: {
+      baseStyle: {
+        fontWeight: "bold",
+      },
+      variants: {
+        md: {
+          bg: "#FFF",
+          fontSize: "2xl",
+          borderRadius: "full",
+          border: "3px solid #000",
+          padding: "1rem",
+        },
       },
       defaultProps: {
         size: "xl", // default is md
