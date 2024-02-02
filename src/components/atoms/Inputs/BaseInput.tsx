@@ -12,6 +12,9 @@ export const BaseInput: FC<Props> = ({ text, register, type = "" }) => {
   const SBaseInput = styled(Input)`
     border: 2px solid #000;
     outline: none;
+    border-radius: inherit;
+    font-size: 1.2rem;
+    padding: 1.5rem 1rem;
 
     &:hover,
     &:active {

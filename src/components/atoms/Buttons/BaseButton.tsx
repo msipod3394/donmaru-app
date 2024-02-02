@@ -21,6 +21,8 @@ export const BaseButton: FC<Props> = ({
     // LinkかButtonを動的に選択
     padding: 1rem;
     min-width: 20rem;
+    border: 3px solid #000;
+    border-radius: 10rem;
 
     ${isDark &&
     css`

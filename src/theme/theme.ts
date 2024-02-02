@@ -66,24 +66,24 @@ const theme = extendTheme({
         variant: "md", // default is solid
       },
     },
-    Link: {
-      baseStyle: {
-        fontWeight: "bold",
-      },
-      variants: {
-        md: {
-          bg: "#FFF",
-          fontSize: "2xl",
-          borderRadius: "full",
-          border: "3px solid #000",
-          padding: "1rem",
-        },
-      },
-      defaultProps: {
-        size: "xl", // default is md
-        variant: "md", // default is solid
-      },
-    },
+    // Link: {
+    //   baseStyle: {
+    //     fontWeight: "bold",
+    //   },
+    //   variants: {
+    //     md: {
+    //       bg: "#FFF",
+    //       fontSize: "2xl",
+    //       borderRadius: "full",
+    //       border: "3px solid #000",
+    //       padding: "1rem",
+    //     },
+    //   },
+    //   defaultProps: {
+    //     size: "xl", // default is md
+    //     variant: "md", // default is solid
+    //   },
+    // },
     Input: {
       baseStyle: {},
       variants: {
