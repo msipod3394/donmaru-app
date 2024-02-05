@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { Text, VStack, HStack, Image } from "@chakra-ui/react";
-import { selectCard } from "@/type/favoriteCard";
 import { TimeIcon } from "@chakra-ui/icons";
 import { FC, useEffect, useState } from "react";
+import { selectCard } from "@/types/favoriteCard";
 
 type Props = {
   data: Array<selectCard>;
@@ -11,27 +11,9 @@ type Props = {
 
 export const CardFavorite: FC<Props> = (props) => {
   const { data, onClickHandle } = props;
-
-  const SBox = styled(HStack)`
-    width: 100%;
-    padding: 1rem;
-    border-radius: 5px;
-    box-sizing: border-box;
-    border: 3px solid #000;
-
-    &._isSelected {
-      border-color: #de5d50;
-    }
-  `;
-
-  const SBoxIn = styled(VStack)`
-    align-items: flex-start;
-  `;
-
   const handleItemClick = (index: number) => {
     onClickHandle?.(index);
   };
-
   return (
     <>
       {data.map((item, index) => (
@@ -73,3 +55,19 @@ export const CardFavorite: FC<Props> = (props) => {
     </>
   );
 };
+
+const SBox = styled(HStack)`
+  width: 100%;
+  padding: 1rem;
+  border-radius: 5px;
+  box-sizing: border-box;
+  border: 3px solid #000;
+
+  &._isSelected {
+    border-color: #de5d50;
+  }
+`;
+
+const SBoxIn = styled(VStack)`
+  align-items: flex-start;
+`;

@@ -51,6 +51,14 @@ export const BaseButton: FC<Props> = ({
           margin-left: 0.5rem;
         }
       `}
+
+      ${isArrow &&
+      isDark &&
+      css`
+        &::after {
+          background-color: #fff;
+        }
+      `}
     }
 
     &:hover {
@@ -68,6 +76,14 @@ export const BaseButton: FC<Props> = ({
       css`
         > span::after {
           background-color: #fff;
+        }
+      `}
+
+    ${isArrow &&
+      isDark &&
+      css`
+        > span::after {
+          background-color: #000;
         }
       `}
     }

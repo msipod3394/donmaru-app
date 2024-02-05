@@ -10,6 +10,7 @@
     "gen_supabase_type": "npx supabase gen types typescript --linked > src/types/database.types.ts"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
@@ -23,6 +24,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.49.3",
+    "react-icons": "^5.0.1",
     "reactstrap": "^9.2.2",
     "styled-components": "^6.1.8",
     "yup": "^1.3.3",
