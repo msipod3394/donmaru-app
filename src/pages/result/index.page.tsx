@@ -1,29 +1,18 @@
-import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { SubmitHandler, useForm } from "react-hook-form";
-import {
-  Text,
-  Button,
-  Input,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  Stack,
-  Box,
-  Link,
-  Image,
-} from "@chakra-ui/react";
+import { Text, Stack, Image } from "@chakra-ui/react";
 import styled from "styled-components";
-import useAuth from "@/hooks/useAuth";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
-import { BaseInput } from "@/components/atoms/Inputs/BaseInput";
-import { ErrorText } from "@/components/atoms/Text/ErrorText";
+import { useSelectedDons } from "@/provider/SelectedDonsContext";
+import { useEffect } from "react";
 
 const Home = () => {
   const router = useRouter();
+  const { selectedDons, setDons } = useSelectedDons();
+
+  useEffect(() => {
+    console.log(selectedDons);
+  }, []);
 
   return (
     <DefaultLayout pageTitle="へいお待ち!">
@@ -31,10 +20,10 @@ const Home = () => {
         <Image
           mt="1rem"
           mb="1rem"
-          src="/menu/sample_result.png"
-          alt="サンプル画像"
+          src={`/menu/${selectedDons.image}`}
+          alt={selectedDons.title}
         />
-        <SResultText fontFamily="serif">「丼丸丼」</SResultText>
+        <SResultText fontFamily="serif">「{selectedDons.title}」</SResultText>
         <SText>サーモン、マグロ、イカ、ネギトロ</SText>
         <Stack spacing="1.5rem">
           <BaseButton isArrow={false} href="">

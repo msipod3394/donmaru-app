@@ -34,23 +34,230 @@ export interface Database {
   }
   public: {
     Tables: {
+      dislikes: {
+        Row: {
+          created_at: string
+          id: number
+          neta_id: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          neta_id?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          neta_id?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dislikes_neta_id_fkey"
+            columns: ["neta_id"]
+            isOneToOne: false
+            referencedRelation: "netas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dislikes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      dons: {
+        Row: {
+          created_at: string
+          id: number
+          image: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          image: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          image?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      dons_netas: {
+        Row: {
+          created_at: string
+          don_id: number | null
+          id: number
+          neta_id: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          don_id?: number | null
+          id?: number
+          neta_id?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          don_id?: number | null
+          id?: number
+          neta_id?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dons_netas_don_id_fkey"
+            columns: ["don_id"]
+            isOneToOne: false
+            referencedRelation: "dons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dons_netas_neta_id_fkey"
+            columns: ["neta_id"]
+            isOneToOne: false
+            referencedRelation: "netas"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      favorits: {
+        Row: {
+          created_at: string
+          don_id: number | null
+          id: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          don_id?: number | null
+          id?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          don_id?: number | null
+          id?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorits_don_id_fkey"
+            columns: ["don_id"]
+            isOneToOne: false
+            referencedRelation: "dons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      netas: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          created_at: string
+          don_id: number | null
+          id: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          don_id?: number | null
+          id?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          don_id?: number | null
+          id?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_don_id_fkey"
+            columns: ["don_id"]
+            isOneToOne: false
+            referencedRelation: "dons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       users: {
         Row: {
+          created_at: string
           email: string
           id: string
           password: string | null
+          updated_at: string
           user_name: string | null
         }
         Insert: {
+          created_at?: string
           email: string
           id: string
           password?: string | null
+          updated_at?: string
           user_name?: string | null
         }
         Update: {
+          created_at?: string
           email?: string
           id?: string
           password?: string | null
+          updated_at?: string
           user_name?: string | null
         }
         Relationships: [

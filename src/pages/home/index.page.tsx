@@ -20,12 +20,45 @@ import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
 import { BaseInput } from "@/components/atoms/Inputs/BaseInput";
 import { ErrorText } from "@/components/atoms/Text/ErrorText";
+import Header from "@/components/Header";
+import { useEffect, useState } from "react";
+import { getAllDons } from "@/hooks/supabaseFunctions";
+import { useSelectedDons } from "@/provider/SelectedDonsContext";
 
 const Home = () => {
   const router = useRouter();
+  const { selectedDons, setDons } = useSelectedDons();
+
+  // 初回、donsテーブルを呼び出す
+  useEffect(() => {
+    const getDons = async () => {
+      const dons = await getAllDons();
+      setDons(dons);
+    };
+    getDons();
+  }, []);
+
+  const onClickSelectDons = () => {
+    // donsデータから一つ選択して返す
+    const donsIndex = Math.floor(Math.random() * selectedDons.length);
+    setDons(selectedDons[donsIndex]);
+    router.push(`/result`);
+  };
+
+  useEffect(() => {
+    console.log("selectedDons", selectedDons);
+  }, [selectedDons]);
 
   return (
     <DefaultLayout pageTitle="丼丸ガチャ">
+      <button onClick={() => onClickSelectDons()}>セレクト</button>
+
+      {/* 結果を表示するページに遷移するボタン */}
+      <Link onClick={() => router.push(`/result`)}>おまかせガチャ</Link>
+
+      {/* selectedDonsが存在する場合に表示 */}
+      {selectedDons && <p>{selectedDons.title}</p>}
+
       <Stack mt="2rem" spacing="1rem">
         <SText>
           本日あなたにぴったりの
