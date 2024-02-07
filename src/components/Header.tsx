@@ -5,9 +5,9 @@ import { Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 
 const Header = () => {
-  const [currentUser, setCurrentUser] = useState("");
   const router = useRouter();
-
+  
+  const [currentUser, setCurrentUser] = useState("");
   const getCurrentUser = async () => {
     const { data } = await supabase.auth.getSession();
     // セッションがあるときだけ現在ログインしているユーザーを取得する

@@ -42,7 +42,7 @@ type SignInFormInput = {
 
 const SignIn: NextPage = () => {
   const router = useRouter();
-  const { onSignIn, errorMessage } = useAuth();
+  const { onSignIn, getCurrentUser, errorMessage } = useAuth();
 
   // useForm の設定
   const {
@@ -60,6 +60,7 @@ const SignIn: NextPage = () => {
   const onSubmit: SubmitHandler<SignInFormInput> = async (data) => {
     const { email, password } = data;
     await onSignIn(email, password);
+    await getCurrentUser();
 
     // エラーメッセージの取得
     if (errorMessage) {

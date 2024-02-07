@@ -32,8 +32,6 @@ export const SelectedDonsProvider: FC<SelectedDonsProviderProps> = ({
 
   // setDons関数
   const setDons = (dons: any) => {
-    console.log("setDons");
-
     setSelectedDons(dons);
   };
 

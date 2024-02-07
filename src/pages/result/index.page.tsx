@@ -5,14 +5,39 @@ import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
 import { useSelectedDons } from "@/provider/SelectedDonsContext";
 import { useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { useLoginUser } from "@/provider/LoginUserContext";
 
 const Home = () => {
   const router = useRouter();
   const { selectedDons, setDons } = useSelectedDons();
+  const { loginUser, setUser } = useLoginUser();
 
-  useEffect(() => {
-    console.log(selectedDons);
-  }, []);
+  console.log("don_id", selectedDons.id);
+  console.log("user_id", loginUser.id);
+
+  const onClickAddOrder = () => {
+    alert("注文履歴に追加しました！");
+
+    // 注文履歴に追加
+    const insertOrderTable = async (
+      don_id: string | undefined,
+      user_id: string
+    ) => {
+      try {
+        const { data, error } = await supabase
+          .from("orders")
+          .insert([{ don_id, user_id }])
+          .select();
+      } catch (error) {
+        alert("エラーが発生しました");
+      } finally {
+        console.log("成功：注文履歴に追加");
+      }
+    };
+
+    insertOrderTable(selectedDons.id, loginUser.id)
+  };
 
   return (
     <DefaultLayout pageTitle="へいお待ち!">
@@ -26,7 +51,7 @@ const Home = () => {
         <SResultText fontFamily="serif">「{selectedDons.title}」</SResultText>
         <SText>サーモン、マグロ、イカ、ネギトロ</SText>
         <Stack spacing="1.5rem">
-          <BaseButton isArrow={false} href="">
+          <BaseButton isArrow={false} onClick={onClickAddOrder}>
             注文履歴に追加する
           </BaseButton>
           <BaseButton isDark={false} isArrow={true} href="/home">

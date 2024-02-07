@@ -41,6 +41,7 @@ const Home = () => {
   const onClickSelectDons = () => {
     // donsデータから一つ選択して返す
     const donsIndex = Math.floor(Math.random() * selectedDons.length);
+
     setDons(selectedDons[donsIndex]);
     router.push(`/result`);
   };
@@ -66,7 +67,11 @@ const Home = () => {
           海鮮丼を選びます 🐟
         </SText>
         <Stack spacing="1.5rem">
-          <BaseButton isDark={false} isArrow={true} href="/result">
+          <BaseButton
+            isDark={false}
+            isArrow={true}
+            onClick={() => onClickSelectDons()}
+          >
             おまかせガチャ
           </BaseButton>
           <BaseButton isDark={false} isArrow={true} href="/select/neta">

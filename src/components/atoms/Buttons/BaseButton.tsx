@@ -7,7 +7,8 @@ type Props = {
   isDark?: boolean;
   isArrow?: boolean;
   type?: "submit" | "button" | "reset";
-  href?: string; // ページ遷移先のURLを指定するプロパティを追加
+  href?: string;
+  onClick?: () => void;
 };
 
 export const BaseButton: FC<Props> = ({
@@ -15,7 +16,8 @@ export const BaseButton: FC<Props> = ({
   isDark = true,
   isArrow = false,
   type = "button",
-  href, // 追加
+  href,
+  onClick,
 }) => {
   const SButton = styled(href ? Link : Button)`
     // LinkかButtonを動的に選択
@@ -90,7 +92,7 @@ export const BaseButton: FC<Props> = ({
   `;
 
   return (
-    <SButton fontFamily="serif" type={type} href={href}>
+    <SButton fontFamily="serif" type={type} href={href} onClick={onClick}>
       <span>{children}</span>
     </SButton>
   );
