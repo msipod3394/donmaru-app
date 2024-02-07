@@ -3,9 +3,11 @@ import { Text, VStack, HStack, Image } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
 import { FC, useEffect, useState } from "react";
 import { selectCard } from "@/types/favoriteCard";
+import { convertFormattedDate } from "@/hooks/convertFormattedDate";
+import { Database } from "@/types/database.types";
 
 type Props = {
-  data: Array<selectCard>;
+  data: Array<Database>;
   onClickHandle?: (arg: number | undefined) => void;
 };
 
@@ -14,6 +16,7 @@ export const CardFavorite: FC<Props> = (props) => {
   const handleItemClick = (index: number) => {
     onClickHandle?.(index);
   };
+
   return (
     <>
       {data.map((item, index) => (
@@ -23,23 +26,17 @@ export const CardFavorite: FC<Props> = (props) => {
           onClick={() => handleItemClick(index)}
           cursor={"pointer"}
         >
-          <Image w="80px" src={item.imageSrc} alt="" />
+          <Image w="80px" src={`/menu/${item.image}`} alt="" />
           <SBoxIn spacing={0.5}>
             <Text size="sm" fontWeight="500">
-              {item.name}
+              {item.title}
             </Text>
-            <HStack>
-              {item.ingredients.map((ingredient, i) => (
-                <Text as="span" key={i} fontSize="xs">
-                  {ingredient}
-                </Text>
-              ))}
-            </HStack>
+            <HStack></HStack>
             <HStack gap=".5rem">
               <HStack gap=".25rem">
                 <TimeIcon fontSize="xs" color="red" />
                 <Text fontSize="xs" color="gray.500">
-                  {item.lastDate}
+                  {convertFormattedDate(item.updated_at)}
                 </Text>
               </HStack>
               <HStack gap=".25rem">

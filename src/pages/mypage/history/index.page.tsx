@@ -6,8 +6,10 @@ import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
 import { BaseInput } from "@/components/atoms/Inputs/BaseInput";
 import { ErrorText } from "@/components/atoms/Text/ErrorText";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CardFavorite } from "@/components/atoms/Card/CardMenuItem";
+import { useLoginUser } from "@/provider/LoginUserContext";
+import { supabase } from "@/lib/supabase";
 
 const OrderHistory = () => {
   const router = useRouter();
@@ -44,6 +46,61 @@ const OrderHistory = () => {
   ];
 
   const [data, setData] = useState(dummyData);
+  const [donIds, setDonIds] = useState();
+
+  // ユーザーデータからdons_id抽出
+  const { loginUser } = useLoginUser();
+
+  useEffect(() => {
+    const getFetchOrderData = async (id: string) => {
+      try {
+        const { data, error } = await supabase
+          .from("orders")
+          .select("*")
+          .eq("user_id", id);
+        if (error) throw error;
+        return data;
+      } catch (error: any) {
+        console.error("Error:", error.message);
+        throw error;
+      }
+    };
+
+    const fetchDataAndSetDonIds = async () => {
+      try {
+        const result = await getFetchOrderData(loginUser.id);
+        const donIds = result.map((order) => order.don_id);
+        setDonIds(donIds);
+
+        console.log("donIds", donIds);
+
+        // donsテーブルから特定の情報を抽出
+        const donData = await getFetchDonData(donIds);
+        console.log("donData", donData);
+
+        setData(donData)
+
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    const getFetchDonData = async (ids) => {
+      try {
+        const { data, error } = await supabase
+          .from("dons")
+          .select("*")
+          .in("id", ids);
+        if (error) throw error;
+        return data;
+      } catch (error) {
+        console.error("Error:", error.message);
+        throw error;
+      }
+    };
+
+    fetchDataAndSetDonIds();
+  }, []);
 
   return (
     <DefaultLayout pageTitle="注文履歴">

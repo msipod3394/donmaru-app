@@ -32,6 +32,9 @@ export const LoginUserProvider: FC<LoginUserProviderProps> = ({ children }) => {
     if (typeof window !== "undefined") {
       localStorage.setItem("loginUser", JSON.stringify(loginUser));
     }
+
+    console.log(loginUser);
+    
   }, [loginUser]);
 
   // setUser関数
