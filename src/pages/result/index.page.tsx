@@ -1,42 +1,44 @@
-import { useRouter } from "next/router";
-import { Text, Stack, Image } from "@chakra-ui/react";
 import styled from "styled-components";
+import { Text, Stack, Image } from "@chakra-ui/react";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
 import { useSelectedDons } from "@/provider/SelectedDonsContext";
-import { useEffect } from "react";
-import { supabase } from "@/lib/supabase";
 import { useLoginUser } from "@/provider/LoginUserContext";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/router";
 
 const Home = () => {
   const router = useRouter();
-  const { selectedDons, setDons } = useSelectedDons();
-  const { loginUser, setUser } = useLoginUser();
+
+  // Hooksの呼び出し
+  const { selectedDons } = useSelectedDons();
+  const { loginUser } = useLoginUser();
 
   console.log("don_id", selectedDons.id);
   console.log("user_id", loginUser.id);
 
+  // 注文履歴に追加
+  const insertOrderTable = async (
+    don_id: string | undefined,
+    user_id: string
+  ) => {
+    try {
+      const { data, error } = await supabase
+        .from("orders")
+        .insert([{ don_id, user_id }])
+        .select();
+    } catch (error) {
+      alert("エラーが発生しました");
+    } finally {
+      alert("注文履歴に追加しました！");
+      console.log("注文履歴に追加成功");
+    }
+  };
+
+  // 注文履歴へ追加する関数
   const onClickAddOrder = () => {
-    alert("注文履歴に追加しました！");
-
-    // 注文履歴に追加
-    const insertOrderTable = async (
-      don_id: string | undefined,
-      user_id: string
-    ) => {
-      try {
-        const { data, error } = await supabase
-          .from("orders")
-          .insert([{ don_id, user_id }])
-          .select();
-      } catch (error) {
-        alert("エラーが発生しました");
-      } finally {
-        console.log("成功：注文履歴に追加");
-      }
-    };
-
-    insertOrderTable(selectedDons.id, loginUser.id)
+    // 注文履歴に追加実行
+    insertOrderTable(selectedDons.id, loginUser.id);
   };
 
   return (
@@ -54,7 +56,11 @@ const Home = () => {
           <BaseButton isArrow={false} onClick={onClickAddOrder}>
             注文履歴に追加する
           </BaseButton>
-          <BaseButton isDark={false} isArrow={true} href="/home">
+          <BaseButton
+            isDark={false}
+            isArrow={true}
+            onClick={() => router.push("/home")}
+          >
             もう一回ガチャする
           </BaseButton>
         </Stack>

@@ -1,45 +1,59 @@
-import React, { createContext, useContext, useState, ReactNode, FC, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  FC,
+  useEffect,
+} from "react";
+import { DBUser } from "@/types/global_db.types";
 
-// 型定義
 type LoginUserContextProps = {
-  loginUser: any;
-  setUser: (dons: any) => void;
+  loginUser: DBUser;
+  setUser: (user: DBUser) => void;
 };
 
 type LoginUserProviderProps = {
   children: ReactNode;
 };
 
-// 初期値の設定
+// コンテキスト作成、初期値を設定
 const LoginUserContext = createContext<LoginUserContextProps | undefined>({
-  loginUser: null,
+  loginUser: {
+    id: "",
+    email: "",
+    user_name: "",
+    password: "",
+    created_at: "",
+    updated_at: "",
+  },
   setUser: () => {},
 });
 
 export const LoginUserProvider: FC<LoginUserProviderProps> = ({ children }) => {
+  // localStorageが利用可能か判定
+  const checkUseLocalStorage = typeof window !== "undefined";
+
   // state管理
-  const [loginUser, setLoginUser] = useState<any | null>(() => {
-    // localStorageが利用可能かどうかを確認してからデータを取得する
-    if (typeof window !== "undefined") {
+  const [loginUser, setLoginUser] = useState<DBUser>(() => {
+    if (checkUseLocalStorage) {
       const storedUser = localStorage.getItem("loginUser");
       return storedUser ? JSON.parse(storedUser) : null;
     }
     return null;
   });
 
+  // ストレージに保存
   useEffect(() => {
-    // localStorageが利用可能かどうかを確認してから保存する
-    if (typeof window !== "undefined") {
+    if (checkUseLocalStorage) {
       localStorage.setItem("loginUser", JSON.stringify(loginUser));
     }
+    console.log("ログイン情報", loginUser);
+  }, [checkUseLocalStorage, loginUser]);
 
-    console.log(loginUser);
-    
-  }, [loginUser]);
-
-  // setUser関数
-  const setUser = (dons: any) => {
-    setLoginUser(dons);
+  // loginUserを更新
+  const setUser = (user: DBUser) => {
+    setLoginUser(user);
   };
 
   // コンテキスト作成
@@ -52,10 +66,8 @@ export const LoginUserProvider: FC<LoginUserProviderProps> = ({ children }) => {
 
 export const useLoginUser = () => {
   const context = useContext(LoginUserContext);
-  // コンテキストがなければスルー
   if (!context) {
     throw new Error("");
   }
-  // コンテキストを返す
   return context;
 };

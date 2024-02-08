@@ -2,12 +2,11 @@ import styled from "styled-components";
 import { Text, VStack, HStack, Image } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
 import { FC, useEffect, useState } from "react";
-import { selectCard } from "@/types/favoriteCard";
 import { convertFormattedDate } from "@/hooks/convertFormattedDate";
-import { Database } from "@/types/database.types";
+import { DBDons } from "@/types/global_db.types";
 
 type Props = {
-  data: Array<Database>;
+  data: Array<DBDons>;
   onClickHandle?: (arg: number | undefined) => void;
 };
 
@@ -22,7 +21,7 @@ export const CardFavorite: FC<Props> = (props) => {
       {data.map((item, index) => (
         <SBox
           key={index}
-          className={item.isSelected ? "_isSelected" : ""}
+          // className={item.isSelected ? "_isSelected" : ""}
           onClick={() => handleItemClick(index)}
           cursor={"pointer"}
         >
@@ -42,7 +41,8 @@ export const CardFavorite: FC<Props> = (props) => {
               <HStack gap=".25rem">
                 <TimeIcon fontSize="xs" color="red" />
                 <Text fontSize="xs" color="gray.500">
-                  過去{item.count}回注文
+                  {/* 過去{item.count}回注文 */}
+                  過去hoge回注文
                 </Text>
               </HStack>
             </HStack>
