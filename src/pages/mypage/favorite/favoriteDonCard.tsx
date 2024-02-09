@@ -1,38 +1,39 @@
-import React from "react";
+import React, { FC } from "react";
 import styled from "styled-components";
 import { Box, Text, VStack, HStack, Image } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
 import { FaRegHeart } from "react-icons/fa";
-import { donsTable } from "@/types/dons";
+import { convertFormattedDate } from "@/hooks/convertFormattedDate";
+import { DBDons } from "@/types/global_db.types";
 
 type Props = {
-  dons: donsTable[];
+  allDons: DBDons;
 };
 
-export const MenuCard = (props: Props) => {
-  const { dons } = props;
-
+const FavoriteDonCard: FC<Props> = (props) => {
+  const { allDons } = props;
+  // console.log("allDons", allDons);
   return (
     <>
-      {dons.map((don) => (
+      {allDons.map((don) => (
         <SBox key={don.id}>
           <Image w="80px" src={`/menu/${don.image}`} alt={don.title} />
           <SBoxIn spacing={0.5}>
             <Text size="sm" fontWeight="500">
               {don.title}
             </Text>
-            <Text fontSize="xs">サーモン、マグロ、イカ、ネギトロ</Text>
+            <Text fontSize="xs">{`hoge,hoge,hoge`}</Text>
             <HStack gap=".5rem">
               <HStack gap=".25rem">
                 <TimeIcon boxSize={3} color="red" />
                 <Text fontSize="xs" color="gray.500">
-                  2024年01月01日
+                  {convertFormattedDate(don.updated_at)}
                 </Text>
               </HStack>
               <HStack gap=".25rem">
                 <TimeIcon boxSize={3} color="red" />
                 <Text fontSize="xs" color="gray.500">
-                  過去3回注文
+                  過去{`hoge`}回注文
                 </Text>
               </HStack>
             </HStack>
@@ -43,6 +44,17 @@ export const MenuCard = (props: Props) => {
     </>
   );
 };
+
+// Style
+const SBGGrayInner = styled(Box)`
+  width: 100%;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  font-weight: 400;
+  text-align: center;
+  background-color: #efefef;
+`;
 
 const SBox = styled(HStack)`
   position: relative;
@@ -65,3 +77,5 @@ const IconHeart = styled(FaRegHeart)`
   font-size: 24px;
   color: #f13b3a;
 `;
+
+export default FavoriteDonCard;

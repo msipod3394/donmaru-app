@@ -75,6 +75,7 @@ export interface Database {
       }
       dons: {
         Row: {
+          map(arg0: (don: { created_at: string; id: number; image: string; title: string; updated_at: string }, index: string) => void): unknown
           created_at: string
           id: number
           image: string
