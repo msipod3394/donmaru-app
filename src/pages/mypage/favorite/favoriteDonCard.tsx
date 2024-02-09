@@ -3,44 +3,48 @@ import styled from "styled-components";
 import { Box, Text, VStack, HStack, Image } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
 import { FaRegHeart } from "react-icons/fa";
-import { convertFormattedDate } from "@/hooks/convertFormattedDate";
 import { DBDons } from "@/types/global_db.types";
+import { convertFormattedDate } from "@/hooks/convertFormattedDate";
 
 type Props = {
-  allDons: DBDons;
+  don: DBDons;
+  onClick: () => void;
 };
 
 const FavoriteDonCard: FC<Props> = (props) => {
-  const { allDons } = props;
-  // console.log("allDons", allDons);
+  const { don, onClick } = props;
+
+  // don データを返す
+  const handleCardClick = () => {
+    onClick(don);
+  };
+
   return (
     <>
-      {allDons.map((don) => (
-        <SBox key={don.id}>
-          <Image w="80px" src={`/menu/${don.image}`} alt={don.title} />
-          <SBoxIn spacing={0.5}>
-            <Text size="sm" fontWeight="500">
-              {don.title}
-            </Text>
-            <Text fontSize="xs">{`hoge,hoge,hoge`}</Text>
-            <HStack gap=".5rem">
-              <HStack gap=".25rem">
-                <TimeIcon boxSize={3} color="red" />
-                <Text fontSize="xs" color="gray.500">
-                  {convertFormattedDate(don.updated_at)}
-                </Text>
-              </HStack>
-              <HStack gap=".25rem">
-                <TimeIcon boxSize={3} color="red" />
-                <Text fontSize="xs" color="gray.500">
-                  過去{`hoge`}回注文
-                </Text>
-              </HStack>
+      <SBox onClick={handleCardClick}>
+        <Image w="80px" src={`/menu/${don.image}`} alt={don.title} />
+        <SBoxIn spacing={0.5}>
+          <Text size="sm" fontWeight="500">
+            {don.title}
+          </Text>
+          <Text fontSize="xs">{`hoge,hoge,hoge`}</Text>
+          <HStack gap=".5rem">
+            <HStack gap=".25rem">
+              <TimeIcon boxSize={3} color="red" />
+              <Text fontSize="xs" color="gray.500">
+                {convertFormattedDate(don.updated_at)}
+              </Text>
             </HStack>
-          </SBoxIn>
-          <IconHeart />
-        </SBox>
-      ))}
+            <HStack gap=".25rem">
+              <TimeIcon boxSize={3} color="red" />
+              <Text fontSize="xs" color="gray.500">
+                過去{`hoge`}回注文
+              </Text>
+            </HStack>
+          </HStack>
+        </SBoxIn>
+        <IconHeart />
+      </SBox>
     </>
   );
 };

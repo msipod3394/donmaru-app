@@ -14,8 +14,15 @@ import FavoriteDonCard from "./favoriteDonCard";
 export default function PageFavorite() {
   const router = useRouter();
 
+  /**
+   * State管理
+   */
+
   // 全丼データ
   const [allDons, setAllDons] = useState<DBDons[]>([]);
+
+  // お気に入りに追加した丼
+  const [favoriteDons, setFavoriteDons] = useState<DBDons[]>([]);
 
   /**
    * 全メニューの取得・表示
@@ -23,41 +30,47 @@ export default function PageFavorite() {
   // 初回、donsテーブルを呼び出す
   useEffect(() => {
     const getDons = async () => {
-      const dons = await getAllDons();
+      const dons: DBDons[] = await getAllDons();
       setAllDons(dons);
+      // console.log("allDons", allDons);
     };
     getDons();
-    console.log(allDons);
-  }, [setAllDons]);
+  }, []);
+
+  // 丼をお気に入りに追加
+  const onClickSelectFavorite = (selectedDon: DBDons) => {
+    // 丼データを取得
+    // console.log("追加した丼" ,selectedDon);
+
+    // 同じIDがあれば削除、なければ追加する
+    const isAlreadyInFavorite = favoriteDons.some(
+      (don) => don.id === selectedDon.id
+    );
+    if (isAlreadyInFavorite) {
+      // 丼IDをチェックして、セレクトした丼ID以外のものを抽出して、Stateを上書き
+      setFavoriteDons((prevState) =>
+        prevState.filter((don) => don.id !== selectedDon.id)
+      );
+    } else {
+      // 同じIDがなければ、そのまま追加処理
+      setFavoriteDons((prevState) => [...prevState, selectedDon]);
+    }
+  };
+
+  useEffect(() => {
+    console.log("favoriteDons", favoriteDons);
+  }, [favoriteDons]);
 
   return (
     <DefaultLayout pageTitle="お気に入り">
       <VStack minW="100%" spacing={2} mt={16} mb={4}>
-        <FavoriteDonCard allDons={allDons} />
-        {/* <SBox>
-          <Image w="80px" src="/menu/sample_result.png" alt="" />
-          <SBoxIn spacing={0.5}>
-            <Text size="sm" fontWeight="500">
-              丼丸丼
-            </Text>
-            <Text fontSize="xs">サーモン、マグロ、イカ、ネギトロ</Text>
-            <HStack gap=".5rem">
-              <HStack gap=".25rem">
-                <TimeIcon boxSize={3} color="red" />
-                <Text fontSize="xs" color="gray.500">
-                  2024年01月01日
-                </Text>
-              </HStack>
-              <HStack gap=".25rem">
-                <TimeIcon boxSize={3} color="red" />
-                <Text fontSize="xs" color="gray.500">
-                  過去3回注文
-                </Text>
-              </HStack>
-            </HStack>
-          </SBoxIn>
-          <IconHeart />
-        </SBox> */}
+        {allDons.map((don) => (
+          <FavoriteDonCard
+            key={don.id}
+            don={don}
+            onClick={onClickSelectFavorite}
+          />
+        ))}
       </VStack>
       <SFixButtonArea>
         <BaseButton isDark={true} isArrow={false}>
