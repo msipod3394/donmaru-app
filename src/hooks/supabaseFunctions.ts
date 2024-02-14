@@ -7,6 +7,11 @@ export const getAllDons = async () => {
   return dons.data;
 };
 
+export const getAllFavoriteDons = async () => {
+  const favoritseDons = await supabase.from("favorits").select("*");
+  return favoritseDons.data;
+};
+
 export const getUserSession = async () => {
   // const supabase = createServerComponentClient({ cookies });
 

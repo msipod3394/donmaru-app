@@ -5,7 +5,7 @@ import { TimeIcon } from "@chakra-ui/icons";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
 import { FaRegHeart } from "react-icons/fa";
-import { getAllDons } from "@/hooks/supabaseFunctions";
+import { getAllDons, getAllFavoriteDons } from "@/hooks/supabaseFunctions";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { DBDons } from "@/types/global_db.types";
@@ -17,6 +17,8 @@ export default function PageFavorite() {
   /**
    * State管理
    */
+  // ローディング
+  const [loading, setLoading] = useState(false);
 
   // 全丼データ
   const [allDons, setAllDons] = useState<DBDons[]>([]);
@@ -73,7 +75,10 @@ export default function PageFavorite() {
         ))}
       </VStack>
       <SFixButtonArea>
-        <BaseButton isDark={true} isArrow={false}>
+        <BaseButton isDark={true} isArrow={true}>
+          <Link href="/mypage/favorite/edit">編集する</Link>
+        </BaseButton>
+        <BaseButton isDark={false} isArrow={false}>
           <Link href="/mypage">マイページに戻る</Link>
         </BaseButton>
       </SFixButtonArea>

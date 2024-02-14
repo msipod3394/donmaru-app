@@ -12,7 +12,7 @@ type Props = {
   favorite?: boolean;
 };
 
-const FavoriteDonCard: FC<Props> = (props) => {
+const NotFavoriteDonCard: FC<Props> = (props) => {
   const { don, onClick, favorite = true } = props;
 
   // don データを返す
@@ -23,7 +23,7 @@ const FavoriteDonCard: FC<Props> = (props) => {
   return (
     <>
       <SBox onClick={handleCardClick}>
-        <Image w="80px" src={`/menu/don_${don.id}.png`} alt={don.title} />
+        <Image w="80px" src={`/menu/${don.image}`} alt={don.title} />
         <SBoxIn spacing={0.5}>
           <Text size="sm" fontWeight="500">
             {don.title}
@@ -94,4 +94,4 @@ const IconOnHeart = styled(FaHeart)`
   color: #f13b3a;
 `;
 
-export default FavoriteDonCard;
+export default NotFavoriteDonCard;

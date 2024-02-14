@@ -17,7 +17,7 @@ const Home = () => {
   console.log("don_id", selectedDons.id);
   console.log("user_id", loginUser.id);
 
-  // 注文履歴に追加
+  // DB(注文履歴テーブル)に登録
   const insertOrderTable = async (
     don_id: string | undefined,
     user_id: string

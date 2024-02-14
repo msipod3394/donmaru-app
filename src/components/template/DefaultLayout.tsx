@@ -16,7 +16,6 @@ type Props = {
 
 export const DefaultLayout: FC<Props> = (props) => {
   const { children, pageTitle = "" } = props;
-
   return (
     <SLayoutWrap as="main">
       <SInner>
