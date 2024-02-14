@@ -4,59 +4,105 @@ import { Box, Text, Stack, VStack, HStack, Image } from "@chakra-ui/react";
 import styled from "styled-components";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
-import { BaseInput } from "@/components/atoms/Inputs/BaseInput";
-import { ErrorText } from "@/components/atoms/Text/ErrorText";
-import { useState } from "react";
-import { CardFavorite } from "@/components/atoms/Card/CardMenuItem";
+import { useEffect, useState } from "react";
+import { getAllDons, getAllFavoriteDons } from "@/hooks/supabaseFunctions";
+// import { CardFavorite } from "@/components/atoms/Card/CardMenuItem";
+import { useLoginUser } from "@/provider/LoginUserContext";
+import { DBDons, DBFavorits } from "@/types/global_db.types";
+import FavoriteDonCard from "./FavoriteDonCard";
+import { useSelectedDons } from "@/provider/SelectedDonsContext";
 
 const SelectFavorite = () => {
   const router = useRouter();
+  const { loginUser } = useLoginUser();
 
-  // dummyData
-  const dummyData = [
-    {
-      id: "1",
-      name: "丼丸丼",
-      ingredients: ["サーモン", "マグロ", "イカ", "ネギトロ"],
-      lastDate: "2024年01月01日",
-      count: "1",
-      imageSrc: "/menu/sample_result.png",
-      isSelected: true,
-    },
-    {
-      id: "2",
-      name: "丼丸丼",
-      ingredients: ["サーモン", "マグロ", "イカ", "ネギトロ"],
-      lastDate: "2024年01月01日",
-      count: "1",
-      imageSrc: "/menu/sample_result.png",
-      isSelected: false,
-    },
-    {
-      id: "3",
-      name: "丼丸丼",
-      ingredients: ["サーモン", "マグロ", "イカ", "ネギトロ"],
-      lastDate: "2024年01月01日",
-      count: "1",
-      imageSrc: "/menu/sample_result.png",
-      isSelected: false,
-    },
-  ];
+  /**
+   * State管理
+   */
+  const [loading, setLoading] = useState(false);
 
-  const [data, setData] = useState(dummyData);
+  // 全丼データ
+  const [allDons, setAllDons] = useState<DBDons[]>([]);
 
-  // お気に入り選択管理
-  const onClickHandleSelect = (index: number | undefined) => {
-    setData((prevData) => {
-      const updatedData = prevData.map((item, i) => {
-        if (i === index) {
-          return { ...item, isSelected: !item.isSelected };
-        }
-        return item;
-      });
-      return updatedData;
-    });
+  // お気に入りに追加した丼
+  const [favoriteDons, setFavoriteDons] = useState<DBFavorits[]>([]);
+
+  // 選択した丼
+  const { selectedDons, setDons } = useSelectedDons();
+
+  // お気に入り操作
+  const onClickHandleFavorite = (selectedDon: DBDons) => {
+    console.log(selectedDon);
+    // 同じIDがあれば削除、なければ追加
+    const isAlreadyInFavorite = favoriteDons.some(
+      (don) => don.id === selectedDon.id
+    );
+
+    // 丼IDをチェックして、セレクトした丼ID以外のものを抽出、Stateを更新
+    if (isAlreadyInFavorite) {
+      setFavoriteDons((prevState) =>
+        prevState.filter((don) => don.id !== selectedDon.id)
+      );
+    } else {
+      // 同じIDがなければ、favoriteDonsに追加
+      setFavoriteDons((prevState) => [...prevState, selectedDon]);
+    }
   };
+
+  // donsデータから一つ選択して返す
+  const onClickSelectDons = () => {
+    const donsIndex = Math.floor(Math.random() * favoriteDons.length);
+    // console.log(favoriteDons[donsIndex]);
+
+    setDons(favoriteDons[donsIndex]);
+    console.log("selectedDons", selectedDons);
+
+    router.push(`/result`);
+  };
+
+  // 初回、DBからデータ取得
+  useEffect(() => {
+    const getDons = async () => {
+      try {
+        setLoading(true); // ローディング
+
+        const dons: DBDons[] | null = await getAllDons();
+        const allFavoriteDons: DBFavorits[] | null = await getAllFavoriteDons();
+
+        // 全丼データ登録
+        setAllDons(dons);
+
+        // お気に入りに登録されている丼のIDだけ抽出
+        const donIds = allFavoriteDons.map((don) => don.don_id);
+
+        // donsテーブルからdonIdsの情報を抽出
+        const filteredFavoriteDons = allDons.filter((don) =>
+          donIds.includes(don.id)
+        );
+
+        // お気に入りにセット
+        setFavoriteDons(filteredFavoriteDons);
+
+        // // donsテーブルからdonIdsの情報を抽出
+        // const filteredNotFavoriteDons = allDons.filter(
+        //   (don) => !donIds.includes(don.id)
+        // );
+      } catch (error) {
+        console.error("エラーが発生しました", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // getDons関数を呼び出す
+    getDons();
+
+    console.log("favoriteDons", favoriteDons);
+  }, []);
+
+  useEffect(() => {
+    console.log("favoriteDons", favoriteDons);
+  }, [favoriteDons]);
 
   return (
     <DefaultLayout pageTitle="お気に入りから選ぶ">
@@ -64,10 +110,17 @@ const SelectFavorite = () => {
         <Text>現在登録中のお気に入りメニュー</Text>
       </SBGGrayInner>
       <VStack minW="100%" mb={10} spacing={4}>
-        <CardFavorite
+        {favoriteDons.map((don) => (
+          <FavoriteDonCard
+            key={don.id}
+            don={don}
+            onClick={onClickHandleFavorite}
+          />
+        ))}
+        {/* <CardFavorite
           data={data}
           onClickHandle={(index) => onClickHandleSelect(index)}
-        />
+        /> */}
         {/* {dummyData.map((item, index) => (
           <CardFavorite
             key={index}
@@ -78,7 +131,11 @@ const SelectFavorite = () => {
           />
         ))} */}
       </VStack>
-      <BaseButton isArrow={true} isDark={true} href="/result">
+      <BaseButton
+        isArrow={true}
+        isDark={true}
+        onClick={() => onClickSelectDons()}
+      >
         ガチャする
       </BaseButton>
     </DefaultLayout>

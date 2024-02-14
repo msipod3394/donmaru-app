@@ -11,7 +11,6 @@ import { DBDons } from "@/types/global_db.types";
 
 const OrderHistory = () => {
   const router = useRouter();
-
   const [data, setData] = useState<DBDons[]>([]);
   const [donIds, setDonIds] = useState<string[]>([]);
 
@@ -39,7 +38,7 @@ const OrderHistory = () => {
         const donIds = result.map((order) => order.don_id);
         setDonIds(donIds);
 
-        console.log("donIds", donIds);
+        // console.log("donIds", donIds);
 
         // donsテーブルから特定の情報を抽出
         const donData = await getFetchDonData(donIds);
@@ -74,10 +73,7 @@ const OrderHistory = () => {
 
   return (
     <DefaultLayout pageTitle="注文履歴">
-      <SBGGrayInner mt="1rem">
-        <Text>現在登録中のお気に入りメニュー</Text>
-      </SBGGrayInner>
-      <VStack minW="100%" mb={10} spacing={4}>
+      <VStack minW="100%" mt={10} mb={10} spacing={4}>
         <CardFavorite data={data} />
       </VStack>
       <BaseButton isDark={false} onClick={() => router.push("/mypage")}>
