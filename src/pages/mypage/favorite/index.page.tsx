@@ -1,14 +1,13 @@
-import Link from "next/link";
-import styled from "styled-components";
-import { Box, Text, VStack, HStack, Image } from "@chakra-ui/react";
-import { TimeIcon } from "@chakra-ui/icons";
-import { DefaultLayout } from "@/components/template/DefaultLayout";
-import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
-import { FaRegHeart } from "react-icons/fa";
-import { getAllDons, getAllFavoriteDons } from "@/hooks/supabaseFunctions";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { DBDons } from "@/types/global_db.types";
+import Link from "next/link";
+import styled from "styled-components";
+import { Box, VStack, HStack, Text } from "@chakra-ui/react";
+import { FaRegHeart } from "react-icons/fa";
+import { DBDons, DBFavorits } from "@/types/global_db.types";
+import { getAllDons, getAllFavoriteDons } from "@/hooks/supabaseFunctions";
+import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
+import { DefaultLayout } from "@/components/template/DefaultLayout";
 import FavoriteDonCard from "./favoriteDonCard";
 
 export default function PageFavorite() {
@@ -26,62 +25,62 @@ export default function PageFavorite() {
   // お気に入りに追加した丼
   const [favoriteDons, setFavoriteDons] = useState<DBDons[]>([]);
 
-  /**
-   * 全メニューの取得・表示
-   */
-  // 初回、donsテーブルを呼び出す
+  // 初回、DBからデータ取得
   useEffect(() => {
     const getDons = async () => {
-      const dons: DBDons[] = await getAllDons();
-      setAllDons(dons);
-      // console.log("allDons", allDons);
+      try {
+        setLoading(true); // ローディング
+
+        const dons: DBDons[] = await getAllDons();
+        const allFavoriteDons: DBFavorits[] = await getAllFavoriteDons();
+
+        // 全丼データ登録
+        setAllDons(dons);
+
+        // お気に入りに登録されている丼のIDだけ抽出
+        const donIds = allFavoriteDons.map((don) => don.don_id);
+
+        // donsテーブルからdonIdsの情報を抽出
+        const filteredFavoriteDons = allDons.filter((don) =>
+          donIds.includes(don.id)
+        );
+
+        // お気に入りにセット
+        setFavoriteDons(filteredFavoriteDons);
+      } catch (error) {
+        console.error("エラーが発生しました", error);
+      } finally {
+        setLoading(false);
+      }
     };
     getDons();
   }, []);
 
-  // 丼をお気に入りに追加
-  const onClickSelectFavorite = (selectedDon: DBDons) => {
-    // 丼データを取得
-    // console.log("追加した丼" ,selectedDon);
-
-    // 同じIDがあれば削除、なければ追加する
-    const isAlreadyInFavorite = favoriteDons.some(
-      (don) => don.id === selectedDon.id
-    );
-    if (isAlreadyInFavorite) {
-      // 丼IDをチェックして、セレクトした丼ID以外のものを抽出して、Stateを上書き
-      setFavoriteDons((prevState) =>
-        prevState.filter((don) => don.id !== selectedDon.id)
-      );
-    } else {
-      // 同じIDがなければ、そのまま追加処理
-      setFavoriteDons((prevState) => [...prevState, selectedDon]);
-    }
-  };
-
+  // setFavoriteDonsが呼ばれた後に再レンダリング
   useEffect(() => {
-    console.log("favoriteDons", favoriteDons);
-  }, [favoriteDons]);
+    console.log("setFavoriteDonsが更新された");
+  }, [setFavoriteDons]);
 
   return (
-    <DefaultLayout pageTitle="お気に入り">
-      <VStack minW="100%" spacing={2} mt={16} mb={4}>
-        {allDons.map((don) => (
-          <FavoriteDonCard
-            key={don.id}
-            don={don}
-            onClick={onClickSelectFavorite}
-          />
-        ))}
-      </VStack>
-      <SFixButtonArea>
-        <BaseButton isDark={true} isArrow={true}>
-          <Link href="/mypage/favorite/edit">編集する</Link>
-        </BaseButton>
-        <BaseButton isDark={false} isArrow={false}>
-          <Link href="/mypage">マイページに戻る</Link>
-        </BaseButton>
-      </SFixButtonArea>
+    <DefaultLayout pageTitle="お気に入り一覧">
+      {loading && <Text>読み込み中</Text>}
+      {!loading && (
+        <>
+          <VStack minW="100%" spacing={2} mt={16} mb={4}>
+            {favoriteDons.map((don) => (
+              <FavoriteDonCard key={don.id} don={don} onClick={() => console.log("test")} />
+            ))}
+          </VStack>
+          <SFixButtonArea>
+            <BaseButton isDark={true} isArrow={true} >
+              <Link href="/mypage/favorite/edit">編集する</Link>
+            </BaseButton>
+            <BaseButton isDark={false} isArrow={false}>
+              <Link href="/mypage">マイページに戻る</Link>
+            </BaseButton>
+          </SFixButtonArea>
+        </>
+      )}
     </DefaultLayout>
   );
 }

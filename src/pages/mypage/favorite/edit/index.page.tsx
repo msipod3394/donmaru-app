@@ -26,53 +26,10 @@ export default function PageFavorite() {
   const [allDons, setAllDons] = useState<DBDons[]>([]);
 
   // お気に入りに追加した丼
-  const [favoriteDons, setFavoriteDons] = useState<DBDons[]>([]);
+  const [favoriteDons, setFavoriteDons] = useState<DBFavorits[]>([]);
 
   // お気に入りに追加されていない丼
   const [notFavoriteDons, setNotFavoriteDons] = useState<DBDons[]>([]);
-
-  // 初期
-  useEffect(() => {
-    const getDons = async () => {
-      try {
-        setLoading(true); // ローディング
-
-        const dons: DBDons[] = await getAllDons();
-        const allFavoritseDons: DBFavorits[] = await getAllFavoriteDons();
-
-        // 全丼データ登録
-        setAllDons(dons);
-
-        // お気に入りに登録されている丼のIDだけ抽出
-        const donIds = allFavoritseDons.map((don) => don.don_id);
-
-        // donsテーブルからdonIdsの情報を抽出
-        const filteredFavoriteDons = allDons.filter((don) =>
-          donIds.includes(don.id)
-        );
-
-        // お気に入りにセット
-        setFavoriteDons(filteredFavoriteDons);
-
-        // お気に入り未登録の丼のセット
-        // donsテーブルからdonIdsの情報を抽出
-        const filteredNotFavoriteDons = allDons.filter(
-          (don) => !donIds.includes(don.id)
-        );
-        setNotFavoriteDons(filteredNotFavoriteDons);
-      } catch (error) {
-        console.error("エラーが発生しました", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // getDons関数を呼び出す
-    getDons();
-
-    // console.log("favoriteDons", favoriteDons);
-    // console.log("notFavoriteDons", notFavoriteDons);
-  }, [setFavoriteDons, setNotFavoriteDons]);
 
   // 丼をお気に入りに追加
   const onClickSelectFavorite = (selectedDon: DBDons) => {
@@ -102,10 +59,6 @@ export default function PageFavorite() {
       );
     }
   };
-
-  useEffect(() => {
-    console.log("notFavoriteDons", notFavoriteDons);
-  }, [notFavoriteDons]);
 
   // DB(favoriteテーブル)に登録
   const insertOrderTable = async (
@@ -160,10 +113,57 @@ export default function PageFavorite() {
     }
   };
 
+  // 初回、DBからデータ取得
+  useEffect(() => {
+    const getDons = async () => {
+      try {
+        setLoading(true); // ローディング
+
+        const dons: DBDons[] = await getAllDons();
+        const allFavoriteDons: DBFavorits[] = await getAllFavoriteDons();
+
+        // 全丼データ登録
+        setAllDons(dons);
+
+        // お気に入りに登録されている丼のIDだけ抽出
+        const donIds = allFavoriteDons.map((don) => don.don_id);
+
+        // donsテーブルからdonIdsの情報を抽出
+        const filteredFavoriteDons = allDons.filter((don) =>
+          donIds.includes(don.id)
+        );
+
+        // お気に入りにセット
+        setFavoriteDons(filteredFavoriteDons);
+
+        // お気に入り未登録の丼のセット
+        // donsテーブルからdonIdsの情報を抽出
+        const filteredNotFavoriteDons = allDons.filter(
+          (don) => !donIds.includes(don.id)
+        );
+        setNotFavoriteDons(filteredNotFavoriteDons);
+      } catch (error) {
+        console.error("エラーが発生しました", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // getDons関数を呼び出す
+    getDons();
+
+    // console.log("favoriteDons", favoriteDons);
+    // console.log("notFavoriteDons", notFavoriteDons);
+  }, []);
+
+  useEffect(() => {
+    console.log("notFavoriteDons", notFavoriteDons);
+  }, [setFavoriteDons, setNotFavoriteDons]);
+
   return (
-    <DefaultLayout pageTitle="お気に入り">
+    <DefaultLayout pageTitle="お気に入りを編集">
       {!loading && (
-        <>
+        <DefaultLayoutInner>
           <VStack minW="100%" spacing={2} mt={8} mb={4}>
             <Heading as="h3" size="2xl" fontFamily="serif" pb={4}>
               登録済みの丼
@@ -197,8 +197,11 @@ export default function PageFavorite() {
             >
               登録する
             </BaseButton>
+            <BaseButton isDark={false} isArrow={false}>
+              <Link href="/mypage/favorite">一覧に戻る</Link>
+            </BaseButton>
           </SFixButtonArea>
-        </>
+        </DefaultLayoutInner>
       )}
     </DefaultLayout>
   );
@@ -208,4 +211,8 @@ export default function PageFavorite() {
 const SFixButtonArea = styled(VStack)`
   position: fixed;
   bottom: 2.4rem;
+`;
+
+const DefaultLayoutInner = styled(VStack)`
+  padding-bottom: 12rem;
 `;
