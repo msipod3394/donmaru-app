@@ -80,6 +80,7 @@ const Home = () => {
           <BaseButton isDark={false} isArrow={true} href="/select/favorite">
             お気に入りからガチャ
           </BaseButton>
+          {/* <Link onClick={() => router.push(`/result`)}>おまかせガチャ</Link> */}
         </Stack>
       </Stack>
     </DefaultLayout>

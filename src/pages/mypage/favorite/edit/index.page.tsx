@@ -5,7 +5,11 @@ import { TimeIcon } from "@chakra-ui/icons";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
 import { FaRegHeart } from "react-icons/fa";
-import { getAllDons, getAllFavoriteDons } from "@/hooks/supabaseFunctions";
+import {
+  getAllDons,
+  getAllFavoriteDons,
+  getUnFavoriteDons,
+} from "@/hooks/supabaseFunctions";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { DBDons, DBFavorits } from "@/types/global_db.types";
@@ -43,6 +47,7 @@ export default function PageFavorite() {
       setFavoriteDons((prevState) =>
         prevState.filter((don) => don.id !== selectedDon.id)
       );
+
       setNotFavoriteDons((prevState) => {
         const newArray = [...prevState, selectedDon];
         const sortedData = newArray.slice().sort((a, b) => a.id - b.id);
@@ -120,6 +125,8 @@ export default function PageFavorite() {
         setLoading(true); // ローディング
 
         const dons: DBDons[] = await getAllDons();
+        const val = await getUnFavoriteDons([1, 2, 3, 4, 5]);
+        console.log(val);
         const allFavoriteDons: DBFavorits[] = await getAllFavoriteDons();
 
         // 全丼データ登録

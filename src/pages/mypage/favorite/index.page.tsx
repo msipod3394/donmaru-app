@@ -58,8 +58,8 @@ export default function PageFavorite() {
 
   // setFavoriteDonsが呼ばれた後に再レンダリング
   useEffect(() => {
-    console.log("setFavoriteDonsが更新された");
-  }, [setFavoriteDons]);
+    console.log("favoriteDonsが更新された");
+  }, [favoriteDons]);
 
   return (
     <DefaultLayout pageTitle="お気に入り一覧">
@@ -68,11 +68,15 @@ export default function PageFavorite() {
         <>
           <VStack minW="100%" spacing={2} mt={16} mb={4}>
             {favoriteDons.map((don) => (
-              <FavoriteDonCard key={don.id} don={don} onClick={() => console.log("test")} />
+              <FavoriteDonCard
+                key={don.id}
+                don={don}
+                onClick={() => console.log("test")}
+              />
             ))}
           </VStack>
           <SFixButtonArea>
-            <BaseButton isDark={true} isArrow={true} >
+            <BaseButton isDark={true} isArrow={true}>
               <Link href="/mypage/favorite/edit">編集する</Link>
             </BaseButton>
             <BaseButton isDark={false} isArrow={false}>

@@ -22,7 +22,7 @@ const OrderHistory = () => {
       try {
         const { data, error } = await supabase
           .from("orders")
-          .select("*")
+          .select(`*,  dons( * )`)
           .eq("user_id", id);
         if (error) throw error;
         return data;
