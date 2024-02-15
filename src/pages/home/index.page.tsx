@@ -40,10 +40,11 @@ const Home = () => {
 
   const onClickSelectDons = () => {
     // donsデータから一つ選択して返す
-    const donsIndex = Math.floor(Math.random() * selectedDons.length);
+    const donsIndex = Math.floor(Math.random() * selectedDons.length - 1) + 1;
+    console.log(donsIndex);
 
     setDons(selectedDons[donsIndex]);
-    router.push(`/result`);
+    router.push(`/result/${donsIndex}`);
   };
 
   useEffect(() => {
