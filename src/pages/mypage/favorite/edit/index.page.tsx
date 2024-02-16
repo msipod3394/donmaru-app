@@ -94,22 +94,55 @@ export default function PageFavorite() {
     }
   };
 
+  // 重複チェック
+  const checkVal = async () => {
+    try {
+      supabase
+        .from("favorits")
+        .select()
+        .eq("don_id", "1")
+        .eq("user_id", "a9f25ec4-172b-443f-a60e-632ef34ad94f")
+        .then(({ data, error }) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+          if (data.length > 0) {
+            console.log("指定された条件に合致する行が見つかりました");
+          } else {
+            console.log("指定された条件に合致する行は見つかりませんでした");
+          }
+        });
+    } catch (error) {
+      console.error("エラーが発生しました", error);
+    }
+  };
+
+  /**
+   * メモ：
+   * checkValで重複チェックができるようになったので、
+   * あとは、favoriteDons をmapで回して、
+   * 問題ないもののみ、UpDateしていく
+   */
+
   // 登録実行
   const onClickAddFavorite = async () => {
     try {
+      checkVal();
+
       // お気に入りをリセット
-      await resetFavorite(loginUser.id);
+      // await resetFavorite(loginUser.id);
 
       // お気に入りデータを更新
-      await Promise.all(
-        favoriteDons.map(async (item) => {
-          console.log(item);
-          await insertOrderTable(item.id, loginUser.id);
-        })
-      );
+      // await Promise.all(
+      //   favoriteDons.map(async (item) => {
+      //     console.log(item);
+      //     await insertOrderTable(item.id, loginUser.id);
+      //   })
+      // );
 
       // お気に入り画面に戻る
-      router.push(`/mypage/favorite`);
+      // router.push(`/mypage/favorite`);
     } catch (error) {
       console.error("エラーが発生しました", error);
     }
@@ -154,6 +187,10 @@ export default function PageFavorite() {
     getDons();
   }, []);
 
+  useEffect(() => {
+    console.log("favoriteDons", favoriteDons);
+  }, [favoriteDons]);
+
   return (
     <DefaultLayout pageTitle="お気に入りを編集">
       {!loading && (
@@ -176,7 +213,7 @@ export default function PageFavorite() {
             </Heading>
             {notFavoriteDons.map((don) => (
               <FavoriteDonCard
-                key={don.id}
+                key={don.title}
                 don={don}
                 onClick={onClickSelectFavorite}
                 favorite={false}
