@@ -59,9 +59,10 @@ const SRightBox = styled(Box)`
   width: 50%;
   max-width: 390px;
   height: 100vh;
+  min-height: calc(100vh - 8rem);
   overflow: hidden;
   background-color: #fff;
-  padding: 4rem 1.6rem 0;
+  padding: 4rem 1.6rem;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -76,7 +77,6 @@ const SRightBox = styled(Box)`
 
 const SSRightBoxIn = styled(VStack)`
   overflow-y: scroll;
-  min-height: calc(100vh - 8rem);
   /* padding-bottom: 8rem; */
 
   &::-webkit-scrollbar {

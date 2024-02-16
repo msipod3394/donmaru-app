@@ -53,10 +53,6 @@ const Home = () => {
 
   return (
     <DefaultLayout pageTitle="丼丸ガチャ">
-      <button onClick={() => onClickSelectDons()}>セレクト</button>
-
-      {/* 結果を表示するページに遷移するボタン */}
-      <Link onClick={() => router.push(`/result`)}>おまかせガチャ</Link>
 
       {/* selectedDonsが存在する場合に表示 */}
       {selectedDons && <p>{selectedDons.title}</p>}
@@ -75,11 +71,11 @@ const Home = () => {
           >
             おまかせガチャ
           </BaseButton>
-          <BaseButton isDark={false} isArrow={true} href="/select/neta">
-            具材を選んでガチャ
-          </BaseButton>
           <BaseButton isDark={false} isArrow={true} href="/select/favorite">
             お気に入りからガチャ
+          </BaseButton>
+          <BaseButton isDark={false} isArrow={true} href="/select/neta">
+            具材を選んでガチャ
           </BaseButton>
           {/* <Link onClick={() => router.push(`/result`)}>おまかせガチャ</Link> */}
         </Stack>

@@ -1,111 +1,73 @@
-import { useRouter } from "next/router";
-import { Box, Text, Stack, VStack, HStack, Image } from "@chakra-ui/react";
-import styled from "styled-components";
-import { DefaultLayout } from "@/components/template/DefaultLayout";
-import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
 import { useEffect, useState } from "react";
-import { CardFavorite } from "@/components/atoms/Card/CardMenuItem";
-import { useLoginUser } from "@/provider/LoginUserContext";
+import { useRouter } from "next/router";
+import styled from "styled-components";
+import { VStack } from "@chakra-ui/react";
 import { supabase } from "@/lib/supabase";
 import { DBDons } from "@/types/global_db.types";
+import { DefaultLayout } from "@/components/template/DefaultLayout";
+import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
+import { CardFavorite } from "@/components/atoms/Card/CardMenuItem";
+import { useLoginUser } from "@/provider/LoginUserContext";
 
 const OrderHistory = () => {
   const router = useRouter();
   const [data, setData] = useState<DBDons[]>([]);
-  const [donIds, setDonIds] = useState<string[]>([]);
 
-  // ユーザーデータからdons_id抽出
+  // ユーザーデータ取得
   const { loginUser } = useLoginUser();
 
+  // ordersテーブルからユーザーのdonsを取得
+  const getFetchData = async (id: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("orders")
+        .select(`*,  dons( * )`)
+        .eq("user_id", id);
+      if (error) throw error;
+      return data;
+    } catch (error: any) {
+      console.error("Error:", error.message);
+      throw error;
+    }
+  };
+
+  // ↑のデータ取得後の、配列操作・ステート更新
+  const fetchDataAndSetDons = async () => {
+    try {
+      const fetchData = await getFetchData(loginUser.id);
+      const fetchDataOnlyDons = fetchData.map((item) => item.dons);
+      console.log("fetchDataOnlyDons", fetchDataOnlyDons);
+      setData(fetchDataOnlyDons);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   useEffect(() => {
-    const getFetchOrderData = async (id: string) => {
-      try {
-        const { data, error } = await supabase
-          .from("orders")
-          .select(`*,  dons( * )`)
-          .eq("user_id", id);
-        if (error) throw error;
-        return data;
-      } catch (error: any) {
-        console.error("Error:", error.message);
-        throw error;
-      }
-    };
-
-    const fetchDataAndSetDonIds = async () => {
-      try {
-        const result = await getFetchOrderData(loginUser.id);
-        const donIds = result.map((order) => order.don_id);
-        setDonIds(donIds);
-
-        // console.log("donIds", donIds);
-
-        // donsテーブルから特定の情報を抽出
-        const donData = await getFetchDonData(donIds);
-        console.log("donData", donData);
-
-        setData(donData);
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-
-    const getFetchDonData = async (ids: string[]) => {
-      try {
-        const { data, error } = await supabase
-          .from("dons")
-          .select("*")
-          .in("id", ids);
-        if (error) throw error;
-        return data;
-      } catch (error) {
-        // console.error("Error:", error.message);
-        throw error;
-      }
-    };
-
-    fetchDataAndSetDonIds();
+    fetchDataAndSetDons();
   }, []);
-
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
 
   return (
     <DefaultLayout pageTitle="注文履歴">
-      <VStack minW="100%" mt={10} mb={10} spacing={4}>
+      <SContentInner minW="100%" mt={5} mb={5} spacing={2}>
         <CardFavorite data={data} />
-      </VStack>
-      <BaseButton isDark={false} onClick={() => router.push("/mypage")}>
-        マイページに戻る
-      </BaseButton>
+      </SContentInner>
+      <SFixButtonArea>
+        <BaseButton isDark={true} onClick={() => router.push("/mypage")}>
+          マイページに戻る
+        </BaseButton>
+      </SFixButtonArea>
     </DefaultLayout>
   );
 };
 
 // Style
-const SBGGrayInner = styled(Box)`
-  width: 100%;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  font-size: 1rem;
-  font-weight: 400;
-  text-align: center;
-  background-color: #efefef;
+const SContentInner = styled(VStack)`
+  padding-bottom: 2rem;
 `;
-const SBox = styled(HStack)`
-  width: 100%;
-  padding: 1rem;
-  border-radius: 5px;
-  box-sizing: border-box;
-  border: 3px solid #000;
-
-  &._isSelected {
-    border-color: #000;
-  }
-`;
-const SBoxIn = styled(VStack)`
-  align-items: flex-start;
+const SFixButtonArea = styled(VStack)`
+  position: fixed;
+  bottom: 2.4rem;
 `;
 
 export default OrderHistory;

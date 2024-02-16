@@ -120,7 +120,7 @@ const SResultText = styled(Text)`
 `;
 const SText = styled(Text)`
   padding: 2rem;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   font-size: 1rem;
   text-align: center;
   background-color: #f13a3a20;
