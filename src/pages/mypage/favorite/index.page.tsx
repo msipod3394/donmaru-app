@@ -2,25 +2,18 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import styled from "styled-components";
-import { Box, VStack, HStack, Text } from "@chakra-ui/react";
-import { FaRegHeart } from "react-icons/fa";
+import { VStack, Text } from "@chakra-ui/react";
 import { DBDons, DBFavorits } from "@/types/global_db.types";
-import { getAllDons, getAllFavoriteDons } from "@/hooks/supabaseFunctions";
+import { getAllFavoriteDons } from "@/hooks/supabaseFunctions";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
-import FavoriteDonCard from "./favoriteDonCard";
+import FavoriteDonCard from "./FavoriteDonCard";
 
 export default function PageFavorite() {
   const router = useRouter();
 
-  /**
-   * State管理
-   */
   // ローディング
   const [loading, setLoading] = useState(false);
-
-  // 全丼データ
-  const [allDons, setAllDons] = useState<DBDons[]>([]);
 
   // お気に入りに追加した丼
   const [favoriteDons, setFavoriteDons] = useState<DBDons[]>([]);
@@ -29,24 +22,18 @@ export default function PageFavorite() {
   useEffect(() => {
     const getDons = async () => {
       try {
-        setLoading(true); // ローディング
+        // ローディング
+        setLoading(true);
 
-        const dons: DBDons[] = await getAllDons();
-        const allFavoriteDons: DBFavorits[] = await getAllFavoriteDons();
+        // お気に入りテーブルからユーザーのdonsを取得
+        const allFavoriteDons: DBFavorits[] | null = await getAllFavoriteDons();
 
-        // 全丼データ登録
-        setAllDons(dons);
-
-        // お気に入りに登録されている丼のIDだけ抽出
-        const donIds = allFavoriteDons.map((don) => don.don_id);
-
-        // donsテーブルからdonIdsの情報を抽出
-        const filteredFavoriteDons = allDons.filter((don) =>
-          donIds.includes(don.id)
-        );
-
-        // お気に入りにセット
-        setFavoriteDons(filteredFavoriteDons);
+        // ↑のデータ取得後の、配列操作・ステート更新
+        if (allFavoriteDons !== null) {
+          const fetchDataOnlyDons = allFavoriteDons.map((item) => item.dons);
+          console.log("fetchDataOnlyDons", fetchDataOnlyDons);
+          setFavoriteDons(fetchDataOnlyDons);
+        }
       } catch (error) {
         console.error("エラーが発生しました", error);
       } finally {
@@ -56,17 +43,12 @@ export default function PageFavorite() {
     getDons();
   }, []);
 
-  // setFavoriteDonsが呼ばれた後に再レンダリング
-  useEffect(() => {
-    console.log("favoriteDonsが更新された");
-  }, [favoriteDons]);
-
   return (
     <DefaultLayout pageTitle="お気に入り一覧">
       {loading && <Text>読み込み中</Text>}
       {!loading && (
         <>
-          <VStack minW="100%" spacing={2} mt={16} mb={4}>
+          <VStack minW="100%" spacing={2} mt={4} mb={4}>
             {favoriteDons.map((don) => (
               <FavoriteDonCard
                 key={don.id}
@@ -76,7 +58,11 @@ export default function PageFavorite() {
             ))}
           </VStack>
           <SFixButtonArea>
-            <BaseButton isDark={true} isArrow={true}>
+            <BaseButton
+              isDark={true}
+              isArrow={true}
+              onClick={() => router.push("/mypage/favorite/edit")}
+            >
               <Link href="/mypage/favorite/edit">編集する</Link>
             </BaseButton>
             <BaseButton isDark={false} isArrow={false}>
@@ -90,34 +76,8 @@ export default function PageFavorite() {
 }
 
 // Style
-const SBGGrayInner = styled(Box)`
-  width: 100%;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  font-size: 1rem;
-  font-weight: 400;
-  text-align: center;
-  background-color: #efefef;
-`;
-
-const SBox = styled(HStack)`
-  position: relative;
-  width: 100%;
-  border: 2px solid #000;
-  padding: 1rem;
-  border-radius: 5px;
-`;
-const SBoxIn = styled(VStack)`
-  align-items: flex-start;
-`;
 const SFixButtonArea = styled(VStack)`
   position: fixed;
   bottom: 2.4rem;
 `;
-const IconHeart = styled(FaRegHeart)`
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  font-size: 24px;
-  color: #f13b3a;
-`;
+

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { VStack } from "@chakra-ui/react";
+import { Text, VStack } from "@chakra-ui/react";
 import { supabase } from "@/lib/supabase";
 import { DBDons } from "@/types/global_db.types";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
@@ -11,6 +11,11 @@ import { useLoginUser } from "@/provider/LoginUserContext";
 
 const OrderHistory = () => {
   const router = useRouter();
+
+  // ローディング
+  const [loading, setLoading] = useState(false);
+
+  // 注文履歴の情報
   const [data, setData] = useState<DBDons[]>([]);
 
   // ユーザーデータ取得
@@ -19,6 +24,9 @@ const OrderHistory = () => {
   // ordersテーブルからユーザーのdonsを取得
   const getFetchData = async (id: string) => {
     try {
+      // ローディング
+      setLoading(true);
+
       const { data, error } = await supabase
         .from("orders")
         .select(`*,  dons( * )`)
@@ -28,6 +36,8 @@ const OrderHistory = () => {
     } catch (error: any) {
       console.error("Error:", error.message);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,14 +59,19 @@ const OrderHistory = () => {
 
   return (
     <DefaultLayout pageTitle="注文履歴">
-      <SContentInner minW="100%" mt={5} mb={5} spacing={2}>
-        <CardFavorite data={data} />
-      </SContentInner>
-      <SFixButtonArea>
-        <BaseButton isDark={true} onClick={() => router.push("/mypage")}>
-          マイページに戻る
-        </BaseButton>
-      </SFixButtonArea>
+      {loading && <Text>読み込み中</Text>}
+      {!loading && (
+        <>
+          <SContentInner minW="100%" mt={5} mb={5} spacing={2}>
+            <CardFavorite data={data} />
+          </SContentInner>
+          <SFixButtonArea>
+            <BaseButton isDark={true} onClick={() => router.push("/mypage")}>
+              マイページに戻る
+            </BaseButton>
+          </SFixButtonArea>
+        </>
+      )}
     </DefaultLayout>
   );
 };

@@ -11,11 +11,10 @@ export const getAllDons: () => Promise<DBDons[]> = async () => {
 
 export const getAllFavoriteDons = async () => {
   const favoritseDons = await supabase.from("favorits").select(`*,  dons( * )`);
-  console.log(favoritseDons.data);
   return favoritseDons.data;
 };
 
-export const getUnFavoriteDons = async (favoriteid: number[]) => {
+export const getNotFavoriteDons = async (favoriteid: number[]) => {
   const result = `(${favoriteid.join(",")})`;
   const unFavoritseDons = await supabase
     .from("dons")

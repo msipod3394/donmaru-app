@@ -66,7 +66,7 @@ const SRightBox = styled(Box)`
   display: flex;
   align-items: center;
   flex-direction: column;
-  justify-content: center;
+  /* justify-content: center; */
 
   > h1 {
     font-size: 2.5rem;

@@ -1,14 +1,11 @@
 import Link from "next/link";
 import styled from "styled-components";
-import { Box, Text, VStack, HStack, Image, Heading } from "@chakra-ui/react";
-import { TimeIcon } from "@chakra-ui/icons";
+import { VStack, Heading } from "@chakra-ui/react";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
-import { FaRegHeart } from "react-icons/fa";
 import {
-  getAllDons,
   getAllFavoriteDons,
-  getUnFavoriteDons,
+  getNotFavoriteDons,
 } from "@/hooks/supabaseFunctions";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -19,18 +16,18 @@ import { useLoginUser } from "@/provider/LoginUserContext";
 
 export default function PageFavorite() {
   const router = useRouter();
+
+  // ユーザーデータ取得
   const { loginUser } = useLoginUser();
 
-  /**
-   * State管理
-   */
+  // ローディング
   const [loading, setLoading] = useState(false);
 
-  // 全丼データ
-  const [allDons, setAllDons] = useState<DBDons[]>([]);
-
   // お気に入りに追加した丼
-  const [favoriteDons, setFavoriteDons] = useState<DBFavorits[]>([]);
+  const [favoriteDons, setFavoriteDons] = useState<DBDons[]>([]);
+
+  // お気に入りに追加した丼のID
+  const [favoriteDonsId, setFavoriteDonsId] = useState<Array[]>([]);
 
   // お気に入りに追加されていない丼
   const [notFavoriteDons, setNotFavoriteDons] = useState<DBDons[]>([]);
@@ -122,33 +119,30 @@ export default function PageFavorite() {
   useEffect(() => {
     const getDons = async () => {
       try {
-        setLoading(true); // ローディング
+        // ローディング
+        setLoading(true);
 
-        const dons: DBDons[] = await getAllDons();
-        const val = await getUnFavoriteDons([1, 2, 3, 4, 5]);
-        console.log(val);
-        const allFavoriteDons: DBFavorits[] = await getAllFavoriteDons();
+        // お気に入りテーブルからユーザーのdonsを取得
+        const allFavoriteDons: DBFavorits[] | null = await getAllFavoriteDons();
 
-        // 全丼データ登録
-        setAllDons(dons);
+        // ↑のデータ取得後の、配列操作・ステート更新
+        if (allFavoriteDons !== null) {
+          const fetchDataOnlyDons = allFavoriteDons.map((item) => item.dons);
+          setFavoriteDons(fetchDataOnlyDons);
+        }
 
-        // お気に入りに登録されている丼のIDだけ抽出
-        const donIds = allFavoriteDons.map((don) => don.don_id);
+        // お気に入り未登録の丼を取得
+        if (allFavoriteDons !== null) {
+          const fetchDataOnlyDonIds = allFavoriteDons.map(
+            (item) => item.don_id
+          );
 
-        // donsテーブルからdonIdsの情報を抽出
-        const filteredFavoriteDons = allDons.filter((don) =>
-          donIds.includes(don.id)
-        );
+          // console.log("fetchDataOnlyDonIds", fetchDataOnlyDonIds);
+          setFavoriteDonsId(fetchDataOnlyDonIds);
 
-        // お気に入りにセット
-        setFavoriteDons(filteredFavoriteDons);
-
-        // お気に入り未登録の丼のセット
-        // donsテーブルからdonIdsの情報を抽出
-        const filteredNotFavoriteDons = allDons.filter(
-          (don) => !donIds.includes(don.id)
-        );
-        setNotFavoriteDons(filteredNotFavoriteDons);
+          const val: DBDons | null = await getNotFavoriteDons(favoriteDonsId);
+          setNotFavoriteDons(val);
+        }
       } catch (error) {
         console.error("エラーが発生しました", error);
       } finally {
@@ -158,14 +152,7 @@ export default function PageFavorite() {
 
     // getDons関数を呼び出す
     getDons();
-
-    // console.log("favoriteDons", favoriteDons);
-    // console.log("notFavoriteDons", notFavoriteDons);
   }, []);
-
-  useEffect(() => {
-    console.log("notFavoriteDons", notFavoriteDons);
-  }, [setFavoriteDons, setNotFavoriteDons]);
 
   return (
     <DefaultLayout pageTitle="お気に入りを編集">
@@ -183,7 +170,7 @@ export default function PageFavorite() {
               />
             ))}
           </VStack>
-          <VStack minW="100%" spacing={2} mt={8} mb={4}>
+          <VStack minW="100%" spacing={2} mt={8}>
             <Heading as="h3" size="2xl" fontFamily="serif" pb={4}>
               未登録の丼
             </Heading>
