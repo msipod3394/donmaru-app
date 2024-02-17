@@ -65,7 +65,7 @@ export default function PageFavorite() {
   // DB(favoriteテーブル)に登録
   const insertOrderTable = async (
     don_id: number | undefined,
-    user_id: string
+    user_id: number
   ) => {
     try {
       const { data, error } = await supabase
@@ -81,27 +81,28 @@ export default function PageFavorite() {
     }
   };
 
-  // ユーザーのお気に入り登録を一旦削除
-  const resetFavorite = async (user_id: string) => {
+  // 既存のお気に入りを削除
+  const deleteFavoriteRow = async (id: string, user_id: string) => {
     const { data, error } = await supabase
       .from("favorits")
       .delete()
+      .eq("don_id", id)
       .eq("user_id", user_id);
     if (error) {
       console.error("削除中にエラーが発生しました", error);
     } else {
-      console.log(`user_id: ${user_id} のデータを削除しました。`);
+      console.log(`削除 user_id: ${user_id}`);
     }
   };
 
   // 重複チェック
-  const checkVal = async () => {
+  const checkVal = async (donID: number, userID: number) => {
     try {
       supabase
         .from("favorits")
         .select()
-        .eq("don_id", "1")
-        .eq("user_id", "a9f25ec4-172b-443f-a60e-632ef34ad94f")
+        .eq("don_id", donID)
+        .eq("user_id", userID)
         .then(({ data, error }) => {
           if (error) {
             console.error(error);
@@ -111,6 +112,7 @@ export default function PageFavorite() {
             console.log("指定された条件に合致する行が見つかりました");
           } else {
             console.log("指定された条件に合致する行は見つかりませんでした");
+            insertOrderTable(donID, userID);
           }
         });
     } catch (error) {
@@ -128,21 +130,43 @@ export default function PageFavorite() {
   // 登録実行
   const onClickAddFavorite = async () => {
     try {
-      checkVal();
+      for (const don of favoriteDons) {
+        console.log("don_id", don.id);
+        if (loginUser !== null) {
+          await checkVal(don.id, loginUser.id);
+        }
+      }
 
-      // お気に入りをリセット
-      // await resetFavorite(loginUser.id);
+      // 既に登録されているデータのdonIDを取得
+      const existingDonIDs = new Array();
+      const existingData = await supabase
+        .from("favorits")
+        .select("don_id")
+        .eq("user_id", loginUser.id);
 
-      // お気に入りデータを更新
-      // await Promise.all(
-      //   favoriteDons.map(async (item) => {
-      //     console.log(item);
-      //     await insertOrderTable(item.id, loginUser.id);
-      //   })
-      // );
+      if (existingData.data) {
+        existingData.data.forEach((row) => {
+          existingDonIDs.push(row.don_id);
+        });
+      }
 
-      // お気に入り画面に戻る
-      // router.push(`/mypage/favorite`);
+      const favoriteDonIds = favoriteDons.map((item) => item.id);
+      const deleteColumnArray = existingDonIDs.filter(
+        (item) => !favoriteDonIds.includes(item)
+      );
+      // console.log("deleteColumnArray", deleteColumnArray);
+
+      // 削除対象の行の削除実行
+      deleteColumnArray.map((id) => {
+        deleteFavoriteRow(id, loginUser.id);
+      });
+
+      alert("お気に入り登録に成功しました");
+
+      // 1秒後に遷移
+      setTimeout(() => {
+        router.push(`/mypage/favorite`);
+      }, 1000);
     } catch (error) {
       console.error("エラーが発生しました", error);
     }
