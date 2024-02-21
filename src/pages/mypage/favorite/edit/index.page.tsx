@@ -227,7 +227,7 @@ export default function PageFavorite() {
               <FavoriteDonCard
                 key={don.id}
                 don={don}
-                onClick={onClickSelectFavorite}
+                onClick={onClickSelectFavorite} //デリートの処理
               />
             ))}
           </VStack>
@@ -239,7 +239,7 @@ export default function PageFavorite() {
               <FavoriteDonCard
                 key={don.title}
                 don={don}
-                onClick={onClickSelectFavorite}
+                onClick={onClickSelectFavorite} //登録の処理
                 favorite={false}
               />
             ))}

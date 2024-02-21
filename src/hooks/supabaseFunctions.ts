@@ -4,7 +4,9 @@ import { supabase } from "@/lib/supabase";
 import { DBDons, DBFavorits } from "@/types/global_db.types";
 
 export const getAllDons: () => Promise<DBDons[]> = async () => {
-  const dons = await supabase.from("dons").select("*");
+  const dons = await supabase
+    .from("dons")
+    .select("*,  dons_netas( dons( * ) )");
 
   return dons.data as DBDons[];
 };
@@ -22,6 +24,13 @@ export const getNotFavoriteDons = async (favoriteid: number[]) => {
     .not("id", "in", result);
   return unFavoritseDons.data;
 };
+
+export const getAllNetas: () => Promise<DBDons[]> = async () => {
+  const dons = await supabase.from("netas").select("*");
+
+  return dons.data as DBDons[];
+};
+
 
 export const getUserSession = async () => {
   // const supabase = createServerComponentClient({ cookies });

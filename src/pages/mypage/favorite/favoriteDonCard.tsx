@@ -8,7 +8,7 @@ import { convertFormattedDate } from "@/hooks/convertFormattedDate";
 
 type Props = {
   don: DBDons;
-  onClick?: () => void;
+  onClick: (don:DBDons) => void;
   favorite?: boolean;
 };
 
