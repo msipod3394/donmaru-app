@@ -39,11 +39,17 @@ const SelectNeta = () => {
 
   const handleCheckboxChange = (netaId: number) => {
     setSelectedNetas((prevSelectedNetas) => {
-      if (prevSelectedNetas.includes(netaId)) {
-        return prevSelectedNetas.filter((id) => id !== netaId);
-      } else {
-        return [...prevSelectedNetas, netaId];
+      const newSelectedNetas = prevSelectedNetas.includes(netaId)
+        ? prevSelectedNetas.filter((id) => id !== netaId)
+        : [...prevSelectedNetas, netaId];
+
+      // 2つ以上アイテムが選択された場合、アラートを表示
+      if (newSelectedNetas.length > 2) {
+        alert("2つ以上のネタを選択できません。");
+        return prevSelectedNetas; // 選択状態を変更せずに戻す
       }
+
+      return newSelectedNetas;
     });
   };
 
