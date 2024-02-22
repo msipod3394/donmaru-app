@@ -1,4 +1,4 @@
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, memo } from "react";
 import {
   Box,
   Container,
@@ -14,7 +14,7 @@ type Props = {
   pageTitle?: string;
 };
 
-export const DefaultLayout: FC<Props> = (props) => {
+export const DefaultLayout: FC<Props> = memo((props) => {
   const { children, pageTitle = "" } = props;
   return (
     <SLayoutWrap as="main">
@@ -31,7 +31,7 @@ export const DefaultLayout: FC<Props> = (props) => {
       </SInner>
     </SLayoutWrap>
   );
-};
+});
 
 // Layout
 const SLayoutWrap = styled(Container)`
@@ -83,3 +83,5 @@ const SSRightBoxIn = styled(VStack)`
     display: none;
   }
 `;
+
+DefaultLayout.displayName = "DefaultLayout";

@@ -1,7 +1,7 @@
+import { FC, memo } from "react";
 import styled from "styled-components";
 import { Text, VStack, HStack, Image } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
-import { FC, useEffect, useState } from "react";
 import { convertFormattedDate } from "@/hooks/convertFormattedDate";
 import { DBDons } from "@/types/global_db.types";
 
@@ -10,7 +10,7 @@ type Props = {
   onClickHandle?: (arg: number | undefined) => void;
 };
 
-export const CardFavorite: FC<Props> = (props) => {
+export const CardFavorite: FC<Props> = memo((props) => {
   const { data, onClickHandle } = props;
   const handleItemClick = (index: number) => {
     onClickHandle?.(index);
@@ -51,7 +51,7 @@ export const CardFavorite: FC<Props> = (props) => {
       ))}
     </>
   );
-};
+});
 
 const SBox = styled(HStack)`
   width: 100%;
@@ -68,3 +68,5 @@ const SBox = styled(HStack)`
 const SBoxIn = styled(VStack)`
   align-items: flex-start;
 `;
+
+CardFavorite.displayName = "CardFavorite";

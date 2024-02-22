@@ -1,7 +1,5 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
-import { DBDons, DBFavorits } from "@/types/global_db.types";
+import { DBDons } from "@/types/global_db.types";
 
 export const getAllDons: () => Promise<DBDons[]> = async () => {
   const dons = await supabase
@@ -30,7 +28,6 @@ export const getAllNetas: () => Promise<DBDons[]> = async () => {
 
   return dons.data as DBDons[];
 };
-
 
 export const getUserSession = async () => {
   // const supabase = createServerComponentClient({ cookies });

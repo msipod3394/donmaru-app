@@ -1,4 +1,4 @@
-export const convertFormattedDate = (isoTimestamp) => {
+export const convertFormattedDate = (isoTimestamp: string | number | Date) => {
   const dateObject = new Date(isoTimestamp);
 
   // 年月日を取得

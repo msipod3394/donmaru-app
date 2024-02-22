@@ -1,6 +1,6 @@
-import { Input } from "@chakra-ui/react";
-import { FC } from "react";
+import { FC, memo } from "react";
 import styled from "styled-components";
+import { Input } from "@chakra-ui/react";
 
 type Props = {
   text: string;
@@ -8,7 +8,7 @@ type Props = {
   type?: string;
 };
 
-export const BaseInput: FC<Props> = ({ text, register, type = "" }) => {
+export const BaseInput: FC<Props> = memo(({ text, register, type = "" }) => {
   const SBaseInput = styled(Input)`
     border: 2px solid #000;
     outline: none;
@@ -24,4 +24,6 @@ export const BaseInput: FC<Props> = ({ text, register, type = "" }) => {
   `;
 
   return <SBaseInput placeholder={text} {...register} type={type} />;
-};
+});
+
+BaseInput.displayName = "BaseInput";

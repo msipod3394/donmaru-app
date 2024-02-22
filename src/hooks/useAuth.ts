@@ -1,6 +1,4 @@
 import { useRouter } from "next/router";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/types/database.types";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useLoginUser } from "@/provider/LoginUserContext";
@@ -82,7 +80,6 @@ const useAuth = () => {
     // セッションがあるときだけ現在ログインしているユーザーを取得する
 
     if (data.session !== null) {
-
       // supabaseに用意されている現在ログインしているユーザーを取得する関数
       const {
         data: { user },
