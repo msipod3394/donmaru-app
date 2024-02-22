@@ -178,6 +178,7 @@ export interface Database {
       }
       netas: {
         Row: {
+          don_id: any
           created_at: string
           id: number
           name: string

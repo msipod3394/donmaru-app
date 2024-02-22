@@ -12,6 +12,7 @@ import { DBDons } from "@/types/global_db.types";
 import { donsTable } from "@/types/dons";
 
 const Home = () => {
+  // idを取得
   const router = useRouter();
   const { id } = router.query;
 

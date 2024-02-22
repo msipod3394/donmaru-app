@@ -35,7 +35,6 @@ const Home = () => {
       const dons = await getAllDons();
       setDons(dons);
       console.log(dons.dons_netas);
-      
     };
     getDons();
   }, []);
