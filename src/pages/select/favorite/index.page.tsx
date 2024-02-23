@@ -19,85 +19,42 @@ const SelectFavorite = () => {
   /**
    * State管理
    */
+  // ローディング
   const [loading, setLoading] = useState(false);
 
-  // 全丼データ
-  const [allDons, setAllDons] = useState<DBDons[]>([]);
-
   // お気に入りに追加した丼
-  const [favoriteDons, setFavoriteDons] = useState<DBFavorits[]>([]);
-
-  // 選択した丼
-  const { selectedDons, setDons } = useSelectedDons();
-
-  // お気に入り操作
-  const onClickHandleFavorite = (selectedDon: DBDons) => {
-    console.log(selectedDon);
-    // 同じIDがあれば削除、なければ追加
-    const isAlreadyInFavorite = favoriteDons.some(
-      (don) => don.id === selectedDon.id
-    );
-
-    // 丼IDをチェックして、セレクトした丼ID以外のものを抽出、Stateを更新
-    if (isAlreadyInFavorite) {
-      setFavoriteDons((prevState) =>
-        prevState.filter((don) => don.id !== selectedDon.id)
-      );
-    } else {
-      // 同じIDがなければ、favoriteDonsに追加
-      setFavoriteDons((prevState) => [...prevState, selectedDon]);
-    }
-  };
+  const [favoriteDons, setFavoriteDons] = useState<DBDons[]>([]);
 
   // donsデータから一つ選択して返す
   const onClickSelectDons = () => {
     const donsIndex = Math.floor(Math.random() * favoriteDons.length);
-    // console.log(favoriteDons[donsIndex]);
-
-    setDons(favoriteDons[donsIndex]);
-    console.log("selectedDons", selectedDons);
-
-    router.push(`/result`);
+    const selectDonIndex = favoriteDons[donsIndex].id;
+    router.push(`/result/${selectDonIndex}`);
   };
 
   // 初回、DBからデータ取得
   useEffect(() => {
     const getDons = async () => {
       try {
-        setLoading(true); // ローディング
+        // ローディング
+        setLoading(true);
 
-        const dons: DBDons[] | null = await getAllDons();
+        // お気に入りテーブルからユーザーのdonsを取得
         const allFavoriteDons: DBFavorits[] | null = await getAllFavoriteDons();
 
-        // 全丼データ登録
-        setAllDons(dons);
-
-        // お気に入りに登録されている丼のIDだけ抽出
-        const donIds = allFavoriteDons.map((don) => don.don_id);
-
-        // donsテーブルからdonIdsの情報を抽出
-        const filteredFavoriteDons = allDons.filter((don) =>
-          donIds.includes(don.id)
-        );
-
-        // お気に入りにセット
-        setFavoriteDons(filteredFavoriteDons);
-
-        // // donsテーブルからdonIdsの情報を抽出
-        // const filteredNotFavoriteDons = allDons.filter(
-        //   (don) => !donIds.includes(don.id)
-        // );
+        // ↑のデータ取得後の、配列操作・ステート更新
+        if (allFavoriteDons !== null) {
+          const fetchDataOnlyDons = allFavoriteDons.map((item) => item.dons);
+          console.log("fetchDataOnlyDons", fetchDataOnlyDons);
+          setFavoriteDons(fetchDataOnlyDons);
+        }
       } catch (error) {
         console.error("エラーが発生しました", error);
       } finally {
         setLoading(false);
       }
     };
-
-    // getDons関数を呼び出す
     getDons();
-
-    console.log("favoriteDons", favoriteDons);
   }, []);
 
   useEffect(() => {
@@ -114,22 +71,9 @@ const SelectFavorite = () => {
           <FavoriteDonCard
             key={don.id}
             don={don}
-            onClick={onClickHandleFavorite}
+            // onClick={onClickHandleFavorite}
           />
         ))}
-        {/* <CardFavorite
-          data={data}
-          onClickHandle={(index) => onClickHandleSelect(index)}
-        /> */}
-        {/* {dummyData.map((item, index) => (
-          <CardFavorite
-            key={index}
-            item={item}
-            index={index}
-            selected={data}
-            onClickHandle={(index) => onClickHandleSelect(index)}
-          />
-        ))} */}
       </VStack>
       <BaseButton
         isArrow={true}
