@@ -1,3 +1,4 @@
+import React from "react";
 import { FC, ReactNode, memo } from "react";
 import {
   Box,
@@ -8,6 +9,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import styled from "styled-components";
+import { MenuDrawer } from "../MenuDrawer";
 
 type Props = {
   children: ReactNode;
@@ -16,6 +18,7 @@ type Props = {
 
 export const DefaultLayout: FC<Props> = memo((props) => {
   const { children, pageTitle = "" } = props;
+
   return (
     <SLayoutWrap as="main">
       <SInner>
@@ -28,6 +31,9 @@ export const DefaultLayout: FC<Props> = memo((props) => {
           </Heading>
           <SSRightBoxIn>{children}</SSRightBoxIn>
         </SRightBox>
+        <MenuDrawerWrapper>
+          <MenuDrawer />
+        </MenuDrawerWrapper>
       </SInner>
     </SLayoutWrap>
   );
@@ -83,5 +89,11 @@ const SSRightBoxIn = styled(VStack)`
     display: none;
   }
 `;
+
+const MenuDrawerWrapper = styled(Box)`
+  position: absolute;
+  top: .5rem;
+  right: .5rem;
+`
 
 DefaultLayout.displayName = "DefaultLayout";
