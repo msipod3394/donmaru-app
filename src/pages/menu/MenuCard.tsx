@@ -1,12 +1,14 @@
 import React from "react";
 import styled from "styled-components";
-import { Box, Text, VStack, HStack, Image } from "@chakra-ui/react";
+import { Box, Text, VStack, HStack, Image, Stack } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
 import { FaHeart } from "react-icons/fa";
 import { donsTable } from "@/types/dons";
+import { DBNetas } from "@/types/global_db.types";
 
 type Props = {
   dons: {
+    dons_netas: any;
     id: string;
     title: string;
     image: string;
@@ -18,11 +20,12 @@ type Props = {
 
 export const MenuCard = (props: Props) => {
   const { dons } = props;
-  console.log(dons);
 
-  // dons.map((don) => {
-  // console.log(don.favorite);
-  // });
+  dons.map((don) => {
+    don.dons_netas.map((neta) => {
+      console.log(neta.netas.name);
+    });
+  });
 
   return (
     <>
@@ -33,18 +36,31 @@ export const MenuCard = (props: Props) => {
             <Text size="sm" fontWeight="500">
               {don.title}
             </Text>
-            <Text fontSize="xs">サーモン、マグロ、イカ、ネギトロ</Text>
+            <HStack gap={0} flexWrap="wrap">
+              {don.dons_netas &&
+                don.dons_netas.map((neta, index) => {
+                  const netaName = neta.netas && neta.netas.name;
+                  return (
+                    <>
+                      <Text as="span" fontSize="xs" key={index}>
+                        {index > 0 && <>・</>}
+                        {netaName}
+                      </Text>
+                    </>
+                  );
+                })}
+            </HStack>
             <HStack gap=".5rem">
               <HStack gap=".25rem">
                 <TimeIcon boxSize={3} color="red" />
                 <Text fontSize="xs" color="gray.500">
-                  2024年01月01日
+                  2024年XX月XX日
                 </Text>
               </HStack>
               <HStack gap=".25rem">
                 <TimeIcon boxSize={3} color="red" />
                 <Text fontSize="xs" color="gray.500">
-                  過去3回注文
+                  過去XX回注文
                 </Text>
               </HStack>
             </HStack>

@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Box, Text, Stack, VStack, HStack, Image } from "@chakra-ui/react";
-import { DBFavorits } from "@/types/global_db.types";
-import { getAllDons, getAllFavoriteDons } from "@/hooks/supabaseFunctions";
+import { DBFavorits, DBOrders } from "@/types/global_db.types";
+import {
+  getAllDons,
+  getAllFavoriteDons,
+  getAllOrder,
+} from "@/hooks/supabaseFunctions";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { MenuCard } from "./MenuCard";
 
@@ -17,22 +21,22 @@ export default function PageMenu() {
   // お気に入りに追加した丼
   const [favoriteDonsID, setFavoriteDonsID] = useState([]);
 
+  // 注文履歴
+  const [order, setOrder] = useState([]);
+
   useEffect(() => {
     // 全丼データの取得
     const getDons = async () => {
       // 全ての丼データを取得
       const dons = await getAllDons();
       setDons(dons);
-      // console.log("dons", dons);
+      console.log("dons", dons);
     };
     getDons();
 
     // お気に入りの取得
     const getFavoriteDons = async () => {
       try {
-        // ローディング
-        setLoading(true);
-
         // お気に入りテーブルからユーザーのdonsを取得
         const allFavoriteDons: DBFavorits[] | null = await getAllFavoriteDons();
 
@@ -45,10 +49,24 @@ export default function PageMenu() {
       } catch (error) {
         console.error("エラーが発生しました", error);
       } finally {
-        setLoading(false);
       }
     };
     getFavoriteDons();
+
+    // 過去の注文回数を取得
+    const getOrder = async () => {
+      try {
+        // お気に入りテーブルからユーザーのdonsを取得
+        const allOrder: DBOrders[] | null = await getAllOrder();
+        console.log(allOrder);
+        setOrder(allOrder);
+        // setOrder(allOrder);
+      } catch (error) {
+        console.error("エラーが発生しました", error);
+      } finally {
+      }
+    };
+    getOrder();
   }, []);
 
   useEffect(() => {

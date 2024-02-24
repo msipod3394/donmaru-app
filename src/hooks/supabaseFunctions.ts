@@ -1,19 +1,23 @@
 import { supabase } from "@/lib/supabase";
-import { DBDons } from "@/types/global_db.types";
+import { DBDons, DBOrders } from "@/types/global_db.types";
 
+
+// 全ての丼を取得
 export const getAllDons: () => Promise<DBDons[]> = async () => {
   const dons = await supabase
     .from("dons")
-    .select("*,  dons_netas( dons( * ) )");
+    .select("*,  dons_netas( netas( * ) )");
 
   return dons.data as DBDons[];
 };
 
+// 全てのお気に入り丼を取得
 export const getAllFavoriteDons = async () => {
   const favoritseDons = await supabase.from("favorits").select(`*,  dons( * )`);
   return favoritseDons.data;
 };
 
+// 全てのお気に入りではない丼を取得
 export const getNotFavoriteDons = async (favoriteid: number[]) => {
   const result = `(${favoriteid.join(",")})`;
   const unFavoritseDons = await supabase
@@ -23,12 +27,19 @@ export const getNotFavoriteDons = async (favoriteid: number[]) => {
   return unFavoritseDons.data;
 };
 
+// 全てのネタを取得
 export const getAllNetas: () => Promise<DBDons[]> = async () => {
   const dons = await supabase.from("netas").select("*");
-
   return dons.data as DBDons[];
 };
 
+// 全てのネタを取得
+export const getAllOrder: () => Promise<DBOrders[]> = async () => {
+  const order = await supabase.from("orders").select("*");
+  return order.data as DBOrders[];
+};
+
+// ユーザーのセッションを取得
 export const getUserSession = async () => {
   // const supabase = createServerComponentClient({ cookies });
 
