@@ -59,7 +59,7 @@ export const Navigation = () => {
         <HoverLink href="/mypage/history">注文履歴</HoverLink>
         <HoverLink href="/mypage/favorite">お気に入り管理</HoverLink>
         <HoverLink href="/mypage/dislike">苦手ネタ管理</HoverLink>
-        <HoverLink href="/mypage/user">会員情報管理</HoverLink>
+        {/* <HoverLink href="/mypage/user">会員情報管理</HoverLink> */}
       </Stack>
     </Stack>
   );
