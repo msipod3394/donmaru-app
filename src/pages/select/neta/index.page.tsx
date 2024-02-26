@@ -36,9 +36,11 @@ const SelectNeta: NextPage = () => {
       if (selectDons.length >= 1) {
         const randomIndex = Math.floor(Math.random() * selectDons.length);
         const selectDonID = selectDons[randomIndex].don_id;
-        router.push(`/result/${selectDonID}`);
+        // router.push(`/result/${selectDonID}`);
       }
     }
+    console.log("selectDons", selectDons);
+    
   }, [selectDons]);
 
   // チェックボックスの更新
@@ -71,16 +73,21 @@ const SelectNeta: NextPage = () => {
     // 通信
     try {
       // 共通クエリ
-      let donsNetasQuery = supabase.from("dons_netas").select(" * , dons( * )");
+      // let donsNetasQuery = supabase.from("dons_netas").select(" * , dons( * )");
+
+      let donsNetasQuery = supabase.from("dons").select("*, dons_netas( * )")
 
       // 選択状況でフィルタリング
       if (selectedNetas.length > 1) {
         console.log("選択したネタが2つの場合");
-        donsNetasQuery = donsNetasQuery.filter(
-          "neta_id",
-          "in",
-          `(${selectedNetas[0]}, ${selectedNetas[1]})`
-        );
+        donsNetasQuery = donsNetasQuery
+        .in('dons_netas.neta_id', [1,2])
+
+          // .filter(
+          //   "neta_id",
+          //   "in",
+          //   `(${selectedNetas[0]}, ${selectedNetas[1]})`
+          // );
       } else {
         console.log("選択したネタが1つの場合");
         const netaId = selectedNetas[0];
