@@ -3,32 +3,72 @@ import styled from "styled-components";
 import { Box, Text, VStack, HStack, Image } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-import { DBDons } from "@/types/global_db.types";
+import { DBDons, Don } from "@/types/global_db.types";
 import { convertFormattedDate } from "@/hooks/convertFormattedDate";
 
+// type Neta = {
+//   id: number;
+//   name: string;
+//   created_at: string;
+//   updated_at: string;
+// };
+
+// type DonsNetas = {
+//   netas: {
+//     id: number;
+//     name: string;
+//     created_at: string;
+//     updated_at: string;
+//   };
+// };
+
+// type Don = {
+//   id: number;
+//   image: string;
+//   title: string;
+//   created_at: string;
+//   dons_netas: DonsNetas[];
+//   updated_at: string;
+// };
+
 type Props = {
-  don: DBDons;
-  onClick?: () => void;
+  don: Don;
   favorite?: boolean;
+  // onClick: () => void | undefined;
 };
 
 const FavoriteDonCard: FC<Props> = (props) => {
-  const { don, onClick, favorite = true } = props;
+  const { don, favorite = true } = props;
+
+  // console.log("dons_netas", don);
 
   // don データを返す
-  const handleCardClick = () => {
-    onClick(don);
-  };
+  // const handleCardClick = () => {
+  //   onClick(don);
+  // };
 
   return (
     <>
-      <SBox onClick={handleCardClick}>
+      <SBox>
         <Image w="80px" src={`/menu/don_${don.id}.png`} alt={don.title} />
         <SBoxIn spacing={0.5}>
           <Text size="sm" fontWeight="500">
             {don.title}
           </Text>
-          <Text fontSize="xs">{`hoge,hoge,hoge`}</Text>
+          <Text fontSize="xs">
+            {don.dons_netas &&
+              don.dons_netas.map((neta, index) => {
+                const netaName = neta.netas && neta.netas.name;
+                return (
+                  <>
+                    <Text as="span" fontSize="xs" key={netaName}>
+                      {index > 0 && <>・</>}
+                      {netaName}
+                    </Text>
+                  </>
+                );
+              })}
+          </Text>
           <HStack gap=".5rem">
             <HStack gap=".25rem">
               <TimeIcon boxSize={3} color="red" />

@@ -5,12 +5,15 @@ import styled from "styled-components";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
 import { useEffect, useState } from "react";
-import { getAllDons, getAllFavoriteDons } from "@/hooks/supabaseFunctions";
+import {
+  getAllDons,
+  getAllFavoriteDons,
+  getAllOrder,
+} from "@/hooks/supabaseFunctions";
 // import { CardFavorite } from "@/components/atoms/Card/CardMenuItem";
 import { useLoginUser } from "@/provider/LoginUserContext";
-import { DBDons, DBFavorits } from "@/types/global_db.types";
+import { DBDons, DBFavorits, DBOrders } from "@/types/global_db.types";
 import FavoriteDonCard from "./FavoriteDonCard";
-import { useSelectedDons } from "@/provider/SelectedDonsContext";
 
 const SelectFavorite = () => {
   const router = useRouter();
@@ -24,6 +27,10 @@ const SelectFavorite = () => {
 
   // お気に入りに追加した丼
   const [favoriteDons, setFavoriteDons] = useState<DBDons[]>([]);
+  const [favoriteDonsId, setFavoriteDonsId] = useState<Array<number>>([]);
+
+  // ユーザーの注文履歴
+  const [orderDons, setOrderDons] = useState<DBOrders[]>([]);
 
   // donsデータから一つ選択して返す
   const onClickSelectDons = () => {
@@ -45,8 +52,33 @@ const SelectFavorite = () => {
         // ↑のデータ取得後の、配列操作・ステート更新
         if (allFavoriteDons !== null) {
           const fetchDataOnlyDons = allFavoriteDons.map((item) => item.dons);
-          console.log("fetchDataOnlyDons", fetchDataOnlyDons);
+          // console.log("fetchDataOnlyDons", fetchDataOnlyDons);
           setFavoriteDons(fetchDataOnlyDons);
+
+          const fetchDataOnlyDonIds = allFavoriteDons.map(
+            (item) => item.don_id
+          );
+          // console.log(fetchDataOnlyDonIds);
+          setFavoriteDonsId(fetchDataOnlyDonIds);
+
+          // 注文履歴の取得
+          const allOrders: DBOrders = await getAllOrder(
+            loginUser.id,
+            favoriteDonsId
+          );
+
+          if (allOrders !== null) {
+            console.log("allOrders", allOrders);
+
+            //   // const favoriteDonIds = favoriteDons.map((don) => don.id);
+            //   // console.log("favoriteDonIds", favoriteDonIds);
+            //   // const fliterOrderDons = allOrders.filter((don) =>
+            //   //   favoriteDonIds.includes(don.id)
+            //   // );
+
+            //   // console.log("fliterOrderDons", fliterOrderDons);
+            //   // setOrderDons(allOrders);
+          }
         }
       } catch (error) {
         console.error("エラーが発生しました", error);
@@ -57,9 +89,9 @@ const SelectFavorite = () => {
     getDons();
   }, []);
 
-  useEffect(() => {
-    console.log("favoriteDons", favoriteDons);
-  }, [favoriteDons]);
+  // useEffect(() => {
+  //   console.log("allOrders", allOrders);
+  // }, [setAllOrders]);
 
   return (
     <DefaultLayout pageTitle="お気に入りから選ぶ">

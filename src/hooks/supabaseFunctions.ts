@@ -7,13 +7,14 @@ export const getAllDons: () => Promise<DBDons[]> = async () => {
   const dons = await supabase
     .from("dons")
     .select("*,  dons_netas( netas( * ) )");
-
   return dons.data as DBDons[];
 };
 
 // 全てのお気に入り丼を取得
 export const getAllFavoriteDons = async () => {
-  const favoritseDons = await supabase.from("favorits").select(`*,  dons( * )`);
+  const favoritseDons = await supabase
+    .from("favorits")
+    .select(`*,  dons( *, dons_netas( netas( * ) ) )`);
   return favoritseDons.data;
 };
 
@@ -33,9 +34,14 @@ export const getAllNetas: () => Promise<DBDons[]> = async () => {
   return dons.data as DBDons[];
 };
 
-// 全てのネタを取得
-export const getAllOrder: () => Promise<DBOrders[]> = async () => {
-  const order = await supabase.from("orders").select("*");
+// ユーザーの履歴を取得
+export const getAllOrder: (
+  userID: string,
+  favoriteid: Array<number>
+) => Promise<DBOrders[]> = async (userID, favoriteid: number[]) => {
+  const result = `(${favoriteid.join(",")})`;
+  const order = await supabase.from("orders").select("*").eq("user_id", userID);
+
   return order.data as DBOrders[];
 };
 
