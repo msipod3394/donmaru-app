@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import styled from "styled-components";
 import { Box, Text, VStack, HStack, Image, Stack } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
@@ -6,68 +6,80 @@ import { FaHeart } from "react-icons/fa";
 import { donsTable } from "@/types/dons";
 import { DBNetas } from "@/types/global_db.types";
 
-type Props = {
-  dons: {
-    dons_netas: any;
-    id: string;
-    title: string;
-    image: string;
-    update_at: string;
-    create_at: string;
-    favorite: boolean;
-  };
+type Order = {
+  don_id: number;
+  updated_at: string;
+  count: number;
 };
 
-export const MenuCard = (props: Props) => {
-  const { dons } = props;
+type Props = {
+  dons: {
+    id: number;
+    title: string;
+    image: string;
+    created_at: string;
+    updated_at: string;
+    dons_netas: {
+      netas: DBNetas;
+    }[];
+    favorite: boolean;
+    order?: Order;
+  }[];
+};
 
-  dons.map((don) => {
-    don.dons_netas.map((neta) => {
-      console.log(neta.netas.name);
-    });
-  });
+export const MenuCard: FC<Props> = (props) => {
+  const { dons } = props;
+  console.log(dons);
 
   return (
     <>
-      {dons.map((don) => (
-        <SBox key={don.id}>
-          <Image w="80px" src={`/menu/${don.image}`} alt={don.title} />
-          <SBoxIn spacing={0.5}>
-            <Text size="sm" fontWeight="500">
-              {don.title}
-            </Text>
-            <HStack gap={0} flexWrap="wrap">
-              {don.dons_netas &&
-                don.dons_netas.map((neta, index) => {
-                  const netaName = neta.netas && neta.netas.name;
-                  return (
-                    <>
+      {Array.isArray(dons) &&
+        dons.map((don) => (
+          <SBox key={don.id}>
+            <Image w="80px" src={`/menu/${don.image}`} alt={don.title} />
+            <SBoxIn spacing={0.5}>
+              <Text size="sm" fontWeight="500">
+                {don.title}
+              </Text>
+              <HStack gap={0} flexWrap="wrap">
+                {don.dons_netas &&
+                  Array.isArray(don.dons_netas) &&
+                  don.dons_netas.map((neta, index) => {
+                    const netaName = neta.netas && neta.netas.name;
+                    return (
                       <Text as="span" fontSize="xs" key={index}>
                         {index > 0 && <>・</>}
                         {netaName}
                       </Text>
-                    </>
-                  );
-                })}
-            </HStack>
-            <HStack gap=".5rem">
-              <HStack gap=".25rem">
-                <TimeIcon boxSize={3} color="red" />
-                <Text fontSize="xs" color="gray.500">
-                  2024年XX月XX日
-                </Text>
+                    );
+                  })}
               </HStack>
-              <HStack gap=".25rem">
-                <TimeIcon boxSize={3} color="red" />
-                <Text fontSize="xs" color="gray.500">
-                  過去XX回注文
-                </Text>
+              <HStack gap=".5rem">
+                {don.order?.updated_at && (
+                  <>
+                    <HStack gap=".25rem">
+                      <TimeIcon boxSize={3} color="red" />
+                      <Text fontSize="xs" color="gray.500">
+                        {don.order?.updated_at}
+                      </Text>
+                    </HStack>
+                  </>
+                )}
+                {don.order?.updated_at && (
+                  <>
+                    <HStack gap=".25rem">
+                      <TimeIcon boxSize={3} color="red" />
+                      <Text fontSize="xs" color="gray.500">
+                        過去{don.order?.count}回注文
+                      </Text>
+                    </HStack>
+                  </>
+                )}
               </HStack>
-            </HStack>
-          </SBoxIn>
-          {don.favorite && <IconHeart />}
-        </SBox>
-      ))}
+            </SBoxIn>
+            {don.favorite && <IconHeart />}
+          </SBox>
+        ))}
     </>
   );
 };

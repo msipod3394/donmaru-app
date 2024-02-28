@@ -10,3 +10,13 @@ export const convertFormattedDate = (isoTimestamp: string | number | Date) => {
   const formattedDate = `${year}/${month}/${day}`;
   return formattedDate;
 };
+
+export const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // 月は0から始まるため +1
+  const day = date.getDate().toString().padStart(2, "0");
+
+  return `${year}年${month}月${day}日`;
+};
+

@@ -35,13 +35,14 @@ export const getAllNetas: () => Promise<DBDons[]> = async () => {
 };
 
 // ユーザーの履歴を取得
-export const getAllOrder: (
-  userID: string,
-  favoriteid: Array<number>
-) => Promise<DBOrders[]> = async (userID, favoriteid: number[]) => {
-  const result = `(${favoriteid.join(",")})`;
-  const order = await supabase.from("orders").select("*").eq("user_id", userID);
-
+export const getAllOrder: (userID: string) => Promise<DBOrders[]> = async (
+  userID
+) => {
+  // don_idと最終注文日のみ取得
+  const order = await supabase
+    .from("orders")
+    .select("don_id, updated_at")
+    .eq("user_id", userID);
   return order.data as DBOrders[];
 };
 
