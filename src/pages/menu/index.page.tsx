@@ -18,9 +18,8 @@ export default function PageMenu() {
   // ローディング
   const [loading, setLoading] = useState(false);
 
-  // 読み込み時、donsテーブル呼び出し
-  const [dons, setDons] = useState<any>([]);
-  const [fliterDons, setFliterDons] = useState<any>([]);
+  // 全ての丼
+  const [dons, setDons] = useState([]);
 
   // お気に入りに追加した丼
   const [favoriteDons, setFavoriteDons] = useState([]);
@@ -34,58 +33,42 @@ export default function PageMenu() {
 
   // 初回読み込み時
   useEffect(() => {
-    // 全丼データの取得
-    const getDons = async () => {
-      // 全ての丼データを取得
-      const allDons = await getAllDons();
-      setDons(allDons);
-    };
-    getDons();
-
-    // お気に入り丼の取得
-    const getFavoriteDons = async () => {
+    const fetchData = async () => {
       try {
-        // お気に入りテーブルからユーザーのdonsを取得
-        const allFavoriteDons: DBFavorits[] | null = await getAllFavoriteDons();
+        setLoading(true);
 
-        // ↑のデータ取得後、配列操作・ステート更新
+        // 全ての丼データを取得
+        const [allDons, allFavoriteDons, allOrder] = await Promise.all([
+          getAllDons(),
+          getAllFavoriteDons(),
+          getAllOrder(loginUser.id),
+        ]);
+
+        setDons(allDons);
+
+        // お気に入り丼の取得
         if (allFavoriteDons !== null) {
           const fetchFavoriteDons = allFavoriteDons.map((item) => item.dons);
           const favoriteIds = fetchFavoriteDons.map((item) => item.id);
-          setFavoriteDons(fetchFavoriteDons);
+          // setFavoriteDons(fetchFavoriteDons);
           setFavoriteDonsIDs(favoriteIds);
         }
-      } catch (error) {
-        console.error("エラーが発生しました", error);
-      }
-    };
-    getFavoriteDons();
 
-    // 過去の注文回数を取得
-    const getOrder = async () => {
-      try {
-        // お気に入りテーブルからユーザーのdonsを取得
-        const allOrder: DBOrders[] | null = await getAllOrder(loginUser.id);
-        console.log("過去の注文履歴", allOrder);
-
-        // IDごとの注文回数をカウントするオブジェクトを作成
+        // 注文履歴
+        // カウント数を取得・更新
         const donIdCounts = {};
-
-        // don_idの重複をカウント
         allOrder.forEach((order) => {
           const donId = order.don_id;
           donIdCounts[donId] = (donIdCounts[donId] || 0) + 1;
         });
 
-        // カウント数を新しいプロパティとして更新
         const allOrderAddCount = allOrder.map((order) => {
           const donId = order.don_id;
           const count = donIdCounts[donId];
           return { ...order, count };
         });
-        // console.log("allOrderAddCount", allOrderAddCount);
 
-        // 最新の注文データのみ保持
+        // 最新の注文データだけにソート
         const latestOrdersMap = new Map();
         allOrderAddCount.forEach((order) => {
           const existingOrder = latestOrdersMap.get(order.don_id);
@@ -100,53 +83,42 @@ export default function PageMenu() {
         });
 
         const latestOrders = Array.from(latestOrdersMap.values());
-        // console.log("最新の注文データ+count", latestOrders);
         setOrder(latestOrders);
       } catch (error) {
         console.error("エラーが発生しました", error);
       } finally {
+        setLoading(false);
       }
     };
-    getOrder();
+
+    fetchData();
   }, []);
 
+  // dons取得後、各プロパティを付与
   useEffect(() => {
     if (dons) {
-      // console.log("全丼データ", dons);
-      // console.log("お気に入り丼", favoriteDons);
-      // console.log("お気に入り丼ID", favoriteDonsIDs);
-      // console.log("過去の注文履歴情報", order);
-
-      // dons取得後、favoriteプロパティを付与
+      // favoriteプロパティを付与
       const allDonsAddFavorite = dons.map((don) => {
-        if (favoriteDonsIDs.includes(don.id)) {
-          return { ...don, favorite: true };
-        } else {
-          return { ...don, favorite: false };
-        }
+        const isFavorite = favoriteDonsIDs.includes(don.id);
+        return { ...don, favorite: isFavorite };
       });
-      setFliterDons(allDonsAddFavorite);
 
       // 履歴と注文回数プロパティを追加
-      const allDonsAddOrder = allDonsAddFavorite.map((don: DBDons) => {
-        // 注文履歴のIDを抽出
+      const allDonsAddOrder = allDonsAddFavorite.map((don) => {
         const orderIds = order.map((don) => don.don_id);
 
-        // 注文履歴に登録があれば、注文履歴プロパティを追加
         if (orderIds.includes(don.id)) {
-          // 一致する履歴を探してくる
           const targetId = don.id;
           const targetOrder = order.find((don) => don.don_id === targetId);
-
           return { ...don, order: targetOrder };
         } else {
           return { ...don, order: {} };
         }
       });
-      // console.log("allDonsAddOrder", allDonsAddOrder);
+
       setAllData(allDonsAddOrder);
     }
-  }, [dons, favoriteDons, favoriteDonsIDs, order]);
+  }, [dons, favoriteDonsIDs, order]);
 
   return (
     <DefaultLayout pageTitle="お品書き">
