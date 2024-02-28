@@ -8,9 +8,14 @@ import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
 import { CardFavorite } from "@/components/atoms/Card/CardMenuItem";
 import { useLoginUser } from "@/provider/LoginUserContext";
+import { useFullPropertyDons } from "@/provider/FullPropertyDonsContext";
 
 const OrderHistory = () => {
   const router = useRouter();
+
+  const { fullPropertyDons, setFullDons } = useFullPropertyDons();
+  console.log("fullPropertyDons", fullPropertyDons);
+  
 
   // ローディング
   const [loading, setLoading] = useState(false);

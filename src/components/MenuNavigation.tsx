@@ -47,7 +47,7 @@ export const Navigation = () => {
           今日の丼を選ぶ
         </Text>
         <HoverLink href="/home">ガチャする</HoverLink>
-        <HoverLink href="/menu">お品書きから選ぶ</HoverLink>
+        <HoverLink href="/menu">全メニューから選ぶ</HoverLink>
       </Stack>
 
       {/* マイページセクション */}

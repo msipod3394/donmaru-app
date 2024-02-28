@@ -44,7 +44,7 @@ const Home = () => {
             結果画面
           </BaseButton>
           <BaseButton isDark={false} isArrow={true} href="/menu">
-            お品書き
+            全メニュー
           </BaseButton>
           <BaseButton isDark={false} isArrow={true} href="/mypage">
             マイページ

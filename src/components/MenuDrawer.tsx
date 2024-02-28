@@ -18,7 +18,6 @@ export const MenuDrawer = memo(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef();
 
-
   return (
     <>
       {/* ハンバーガーアイコン部分 */}
@@ -36,7 +35,7 @@ export const MenuDrawer = memo(() => {
           <DrawerContent>
             <DrawerCloseButton />
             <DrawerHeader as="h2" size="4xl" fontFamily="serif">
-              お品書き
+              全メニュー
             </DrawerHeader>
             <DrawerBody>
               <Navigation />

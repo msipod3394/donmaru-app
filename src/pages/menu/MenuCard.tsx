@@ -29,7 +29,7 @@ type Props = {
 
 export const MenuCard: FC<Props> = (props) => {
   const { dons } = props;
-  console.log(dons);
+  // console.log(dons);
 
   return (
     <>

@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { VStack } from "@chakra-ui/react";
 import { DBDons, DBFavorits, DBOrders } from "@/types/global_db.types";
@@ -10,10 +11,11 @@ import { useLoginUser } from "@/provider/LoginUserContext";
 import { convertFormattedDate } from "@/hooks/convertFormattedDate";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { MenuCard } from "./MenuCard";
+import { useFullPropertyDons } from "@/provider/FullPropertyDonsContext";
 
 export default function PageMenu() {
-  // ユーザーのログイン情報
   const { loginUser } = useLoginUser();
+  const { fullPropertyDons, setFullDons } = useFullPropertyDons();
 
   // ローディング
   const [loading, setLoading] = useState(false);
@@ -22,7 +24,6 @@ export default function PageMenu() {
   const [dons, setDons] = useState([]);
 
   // お気に入りに追加した丼
-  const [favoriteDons, setFavoriteDons] = useState([]);
   const [favoriteDonsIDs, setFavoriteDonsIDs] = useState([]);
 
   // 注文履歴
@@ -84,6 +85,9 @@ export default function PageMenu() {
 
         const latestOrders = Array.from(latestOrdersMap.values());
         setOrder(latestOrders);
+
+        setFullDons(latestOrders);
+        console.log("fullPropertyDons", fullPropertyDons);
       } catch (error) {
         console.error("エラーが発生しました", error);
       } finally {
@@ -121,7 +125,7 @@ export default function PageMenu() {
   }, [dons, favoriteDonsIDs, order]);
 
   return (
-    <DefaultLayout pageTitle="お品書き">
+    <DefaultLayout pageTitle="全メニュー">
       <VStack minW="100%" spacing={2} mt="2rem" mb="2rem" minH="500px">
         {allData && <MenuCard dons={allData} />}
       </VStack>
