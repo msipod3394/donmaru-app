@@ -6,6 +6,7 @@ import { LoginUserProvider, useLoginUser } from "@/provider/LoginUserContext";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { FullPropertyDonsProvider } from "@/provider/FullPropertyDonsContext";
+// import { FullPropertyDonsProvider } from "@/provider/FullPropertyDonsContext";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   // const router = useRouter();

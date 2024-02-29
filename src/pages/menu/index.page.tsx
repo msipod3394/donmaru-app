@@ -12,13 +12,17 @@ import { convertFormattedDate } from "@/hooks/convertFormattedDate";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { MenuCard } from "./MenuCard";
 import { useFullPropertyDons } from "@/provider/FullPropertyDonsContext";
+// import { useFullPropertyDons } from "@/provider/FullPropertyDonsContext";
 
 export default function PageMenu() {
-  const { loginUser } = useLoginUser();
-  const { fullPropertyDons, setFullDons } = useFullPropertyDons();
-
   // ローディング
   const [loading, setLoading] = useState(false);
+
+  // ログイン状況
+  const { loginUser } = useLoginUser();
+
+  // 全てのプロパティが揃ったデータ
+  const { fullPropertyDons, setFullDons } = useFullPropertyDons();
 
   // 全ての丼
   const [dons, setDons] = useState([]);
@@ -84,10 +88,8 @@ export default function PageMenu() {
         });
 
         const latestOrders = Array.from(latestOrdersMap.values());
+        console.log("latestOrders", latestOrders);
         setOrder(latestOrders);
-
-        setFullDons(latestOrders);
-        console.log("fullPropertyDons", fullPropertyDons);
       } catch (error) {
         console.error("エラーが発生しました", error);
       } finally {
@@ -110,19 +112,28 @@ export default function PageMenu() {
       // 履歴と注文回数プロパティを追加
       const allDonsAddOrder = allDonsAddFavorite.map((don) => {
         const orderIds = order.map((don) => don.don_id);
+        // console.log(orderIds);
 
         if (orderIds.includes(don.id)) {
           const targetId = don.id;
           const targetOrder = order.find((don) => don.don_id === targetId);
+
           return { ...don, order: targetOrder };
         } else {
           return { ...don, order: {} };
         }
       });
 
+      // console.log("allDonsAddOrder", allDonsAddOrder);
+
       setAllData(allDonsAddOrder);
+      setFullDons(allDonsAddOrder);
     }
   }, [dons, favoriteDonsIDs, order]);
+
+  useEffect(() => {
+    console.log("fullPropertyDons", fullPropertyDons);
+  }, [allData]);
 
   return (
     <DefaultLayout pageTitle="全メニュー">

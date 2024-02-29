@@ -6,9 +6,18 @@ import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
 import { FaRegHeart } from "react-icons/fa";
 import { useRouter } from "next/router";
+import { useFullPropertyDons } from "@/provider/FullPropertyDonsContext";
+import { useEffect } from "react";
 
 export default function PageMyPage() {
   const router = useRouter();
+
+  // 全てのプロパティが揃ったデータ
+  const { fullPropertyDons, setFullDons } = useFullPropertyDons();
+
+  useEffect(() => {
+    console.log("fullPropertyDons", fullPropertyDons);
+  }, []);
 
   return (
     <DefaultLayout pageTitle="マイページ">

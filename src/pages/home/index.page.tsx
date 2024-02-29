@@ -1,63 +1,48 @@
-import { NextPage } from "next";
-import { useRouter } from "next/router";
-import { SubmitHandler, useForm } from "react-hook-form";
-import {
-  Text,
-  Button,
-  Input,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  Stack,
-  Box,
-  Link,
-} from "@chakra-ui/react";
 import styled from "styled-components";
-import useAuth from "@/hooks/useAuth";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/router";
+import { Text, Stack } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import {
+  getAllDons,
+  getAllFavoriteDons,
+  getAllOrder,
+} from "@/hooks/supabaseFunctions";
+import { useLoginUser } from "@/provider/LoginUserContext";
+import { useFullPropertyDons } from "@/provider/FullPropertyDonsContext";
+import { convertFormattedDate } from "@/hooks/convertFormattedDate";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
-import { BaseInput } from "@/components/atoms/Inputs/BaseInput";
-import { ErrorText } from "@/components/atoms/Text/ErrorText";
-// import Header from "@/components/Header";
-import { useEffect, useState } from "react";
-import { getAllDons } from "@/hooks/supabaseFunctions";
-import { useSelectedDons } from "@/provider/SelectedDonsContext";
+import useFetchDonsData from "@/hooks/useFetchDonsData";
 
 const Home = () => {
   const router = useRouter();
-  const { selectedDons, setDons } = useSelectedDons();
 
-  // 初回、donsテーブルを呼び出す
+  // ローディング
+  const [loading, setLoading] = useState(false);
+
+  // ログイン状況の呼び出し
+  const { loginUser } = useLoginUser();
+
+  // 全てのプロパティが揃ったデータ
+  const { fullPropertyDons, setFullDons } = useFullPropertyDons();
+
+  const { allData } = useFetchDonsData();
+
   useEffect(() => {
-    const getDons = async () => {
-      const dons = await getAllDons();
-      setDons(dons);
-      console.log(dons.dons_netas);
-    };
-    getDons();
-  }, []);
+    setFullDons(allData);
+    console.log("fullPropertyDons", fullPropertyDons);
+  }, [allData]);
 
+  // おまかせガチャ
   const onClickSelectDons = () => {
-    // donsデータから一つ選択して返す
-    const donsIndex = Math.floor(Math.random() * selectedDons.length - 1) + 1;
-    console.log(donsIndex);
-
-    setDons(selectedDons[donsIndex]);
+    // fullPropertyDonsデータから一つ選択して返す
+    const donsIndex =
+      Math.floor(Math.random() * fullPropertyDons.length - 1) + 1;
     router.push(`/result/${donsIndex}`);
   };
 
-  useEffect(() => {
-    console.log("selectedDons", selectedDons);
-  }, [selectedDons]);
-
   return (
     <DefaultLayout pageTitle="丼丸ガチャ">
-
-      {/* selectedDonsが存在する場合に表示 */}
-      {selectedDons && <p>{selectedDons.title}</p>}
-
       <Stack mt="2rem" spacing="1rem">
         <SText>
           本日あなたにぴったりの

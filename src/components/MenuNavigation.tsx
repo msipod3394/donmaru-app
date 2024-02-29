@@ -41,6 +41,13 @@ export const Navigation = () => {
         </>
       )}
 
+      {/* ホーム */}
+      <Stack mt="40px">
+        <HoverLink as="b" href="/home">
+          ホーム
+        </HoverLink>
+      </Stack>
+
       {/* 今日の丼を選ぶセクション */}
       <Stack mt="40px">
         <Text as="h3" fontWeight="bold">
