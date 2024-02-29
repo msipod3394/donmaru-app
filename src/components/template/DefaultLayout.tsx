@@ -29,7 +29,7 @@ export const DefaultLayout: FC<Props> = memo((props) => {
           <Heading as="h2" size="4xl" fontFamily="serif" pb={4}>
             {pageTitle}
           </Heading>
-          <SSRightBoxIn>{children}</SSRightBoxIn>
+          <SSRightBoxIn minW="100%">{children}</SSRightBoxIn>
         </SRightBox>
         <MenuDrawerWrapper>
           <MenuDrawer />

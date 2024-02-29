@@ -8,9 +8,14 @@ import { getAllFavoriteDons } from "@/hooks/supabaseFunctions";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import FavoriteDonCard from "./FavoriteDonCard";
+import { useFullPropertyDons } from "@/provider/FullPropertyDonsContext";
+import { CardMenuItem } from "@/components/atoms/Card/CardMenuItem";
 
 export default function PageFavorite() {
   const router = useRouter();
+
+  // 全てのプロパティが揃ったデータ
+  const { fullPropertyDons } = useFullPropertyDons();
 
   // ローディング
   const [loading, setLoading] = useState(false);
@@ -18,45 +23,30 @@ export default function PageFavorite() {
   // お気に入りに追加した丼
   const [favoriteDons, setFavoriteDons] = useState<DBDons[]>([]);
 
+  // donsデータから一つ選択して返す
+  const onClickSelectDons = () => {
+    const donsIndex = Math.floor(Math.random() * favoriteDons.length);
+    const selectDonIndex = favoriteDons[donsIndex].id;
+    router.push(`/result/${selectDonIndex}`);
+  };
+
   // 初回、DBからデータ取得
   useEffect(() => {
-    const getDons = async () => {
-      try {
-        // ローディング
-        setLoading(true);
-
-        // お気に入りテーブルからユーザーのdonsを取得
-        const allFavoriteDons: DBFavorits[] | null = await getAllFavoriteDons();
-
-        // ↑のデータ取得後の、配列操作・ステート更新
-        if (allFavoriteDons !== null) {
-          const fetchDataOnlyDons = allFavoriteDons.map((item) => item.dons);
-          console.log("fetchDataOnlyDons", fetchDataOnlyDons);
-          setFavoriteDons(fetchDataOnlyDons);
-        }
-      } catch (error) {
-        console.error("エラーが発生しました", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getDons();
+    console.log("fullPropertyDons", fullPropertyDons);
+    const filteredFavoriteDons = fullPropertyDons.filter(
+      (item: Dons) => item.favorite === true
+    );
+    setFavoriteDons(filteredFavoriteDons);
   }, []);
 
   return (
-    <DefaultLayout pageTitle="お気に入り一覧">
+    <DefaultLayout pageTitle="お気に入り管理">
       {loading && <Text>読み込み中</Text>}
       {!loading && (
         <>
-          <VStack minW="100%" spacing={2} mt={4} mb={4}>
-            {favoriteDons.map((don) => (
-              <FavoriteDonCard
-                key={don.id}
-                don={don}
-                onClick={() => console.log("test")}
-              />
-            ))}
-          </VStack>
+          <SContentInner minW="100%" mt={5} mb={5} spacing={2}>
+            <CardMenuItem dons={favoriteDons} />
+          </SContentInner>
           <SFixButtonArea>
             <BaseButton
               isDark={true}
@@ -76,6 +66,9 @@ export default function PageFavorite() {
 }
 
 // Style
+const SContentInner = styled(VStack)`
+  padding-bottom: 2rem;
+`;
 const SFixButtonArea = styled(VStack)`
   position: fixed;
   bottom: 2.4rem;

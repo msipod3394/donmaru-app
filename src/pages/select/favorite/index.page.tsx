@@ -24,9 +24,6 @@ const SelectFavorite = () => {
   // 全てのプロパティが揃ったデータ
   const { fullPropertyDons } = useFullPropertyDons();
 
-  /**
-   * State管理
-   */
   // ローディング
   const [loading, setLoading] = useState(false);
 

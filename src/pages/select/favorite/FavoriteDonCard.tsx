@@ -70,18 +70,28 @@ const FavoriteDonCard: FC<Props> = (props) => {
               })}
           </Text>
           <HStack gap=".5rem">
-            <HStack gap=".25rem">
-              <TimeIcon boxSize={3} color="red" />
-              <Text fontSize="xs" color="gray.500">
-                {convertFormattedDate(don.updated_at)}
-              </Text>
-            </HStack>
-            <HStack gap=".25rem">
-              <TimeIcon boxSize={3} color="red" />
-              <Text fontSize="xs" color="gray.500">
-                過去{`hoge`}回注文
-              </Text>
-            </HStack>
+            <HStack gap=".5rem">
+                {don.order?.updated_at && (
+                  <>
+                    <HStack gap=".25rem">
+                      <TimeIcon boxSize={3} color="red" />
+                      <Text fontSize="xs" color="gray.500">
+                        {don.order?.updated_at}
+                      </Text>
+                    </HStack>
+                  </>
+                )}
+                {don.order?.updated_at && (
+                  <>
+                    <HStack gap=".25rem">
+                      <TimeIcon boxSize={3} color="red" />
+                      <Text fontSize="xs" color="gray.500">
+                        過去{don.order?.count}回注文
+                      </Text>
+                    </HStack>
+                  </>
+                )}
+              </HStack>
           </HStack>
         </SBoxIn>
         {favorite === true ? <IconOnHeart /> : <IconHeart />}
