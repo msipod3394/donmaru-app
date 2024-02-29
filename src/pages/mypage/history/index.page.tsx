@@ -6,60 +6,41 @@ import { supabase } from "@/lib/supabase";
 import { DBDons } from "@/types/global_db.types";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
-import { CardFavorite } from "@/components/atoms/Card/CardMenuItem";
+import { CardMenuItem } from "@/components/atoms/Card/CardMenuItem";
 import { useLoginUser } from "@/provider/LoginUserContext";
 import { useFullPropertyDons } from "@/provider/FullPropertyDonsContext";
 
 const OrderHistory = () => {
   const router = useRouter();
 
-  const { fullPropertyDons, setFullDons } = useFullPropertyDons();
-  console.log("fullPropertyDons", fullPropertyDons);
-  
-
   // ローディング
   const [loading, setLoading] = useState(false);
 
-  // 注文履歴の情報
-  const [data, setData] = useState<DBDons[]>([]);
+  // orderに登録されている丼
+  const [orderDons, setOrderDons] = useState<DBDons[]>([]);
 
-  // ユーザーデータ取得
-  const { loginUser } = useLoginUser();
+  // 全てのプロパティが揃ったデータ
+  const { fullPropertyDons } = useFullPropertyDons();
 
-  // ordersテーブルからユーザーのdonsを取得
-  const getFetchData = async (id: string) => {
-    try {
-      // ローディング
-      setLoading(true);
+  console.log("fullPropertyDons", fullPropertyDons);
 
-      const { data, error } = await supabase
-        .from("orders")
-        .select(`*,  dons( * )`)
-        .eq("user_id", id);
-      if (error) throw error;
-      return data;
-    } catch (error: any) {
-      console.error("Error:", error.message);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ↑のデータ取得後の、配列操作・ステート更新
-  const fetchDataAndSetDons = async () => {
-    try {
-      const fetchData = await getFetchData(loginUser.id);
-      const fetchDataOnlyDons = fetchData.map((item) => item.dons);
-      console.log("fetchDataOnlyDons", fetchDataOnlyDons);
-      setData(fetchDataOnlyDons);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
+  // 初回、DBからデータ取得
   useEffect(() => {
-    fetchDataAndSetDons();
+    console.log("fullPropertyDons", fullPropertyDons);
+
+    // orderテーブルに登録があるもののみソート
+    const filteredOrderDons = fullPropertyDons.filter(
+      (item: Dons) => Object.keys(item.order).length !== 0
+    );
+
+    // 登録が新しい順にソート
+    const sortedOrderDons = filteredOrderDons.sort((a, b) => {
+      const updatedAtA = new Date(a.order.updated_at).getTime();
+      const updatedAtB = new Date(b.order.updated_at).getTime();
+      return updatedAtB - updatedAtA;
+    });
+
+    setOrderDons(sortedOrderDons);
   }, []);
 
   return (
@@ -68,7 +49,7 @@ const OrderHistory = () => {
       {!loading && (
         <>
           <SContentInner minW="100%" mt={5} mb={5} spacing={2}>
-            <CardFavorite data={data} />
+            <CardMenuItem dons={orderDons} />
           </SContentInner>
           <SFixButtonArea>
             <BaseButton isDark={true} onClick={() => router.push("/mypage")}>
