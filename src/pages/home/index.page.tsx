@@ -57,10 +57,18 @@ const Home = () => {
           >
             おまかせガチャ
           </BaseButton>
-          <BaseButton isDark={false} isArrow={true} href="/select/favorite">
+          <BaseButton
+            isDark={false}
+            isArrow={true}
+            onClick={() => router.push("/select/favorite")}
+          >
             お気に入りからガチャ
           </BaseButton>
-          <BaseButton isDark={false} isArrow={true} href="/select/neta">
+          <BaseButton
+            isDark={false}
+            isArrow={true}
+            onClick={() => router.push("/select/neta")}
+          >
             具材を選んでガチャ
           </BaseButton>
           {/* <Link onClick={() => router.push(`/result`)}>おまかせガチャ</Link> */}

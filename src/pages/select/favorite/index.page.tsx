@@ -1,23 +1,28 @@
-import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { Box, Text, Stack, VStack, HStack, Image } from "@chakra-ui/react";
 import styled from "styled-components";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
 import { useEffect, useState } from "react";
-import {
-  getAllDons,
-  getAllFavoriteDons,
-  getAllOrder,
-} from "@/hooks/supabaseFunctions";
-// import { CardFavorite } from "@/components/atoms/Card/CardMenuItem";
-import { useLoginUser } from "@/provider/LoginUserContext";
-import { DBDons, DBFavorits, DBOrders } from "@/types/global_db.types";
+import { DBDons, DonsNetas } from "@/types/global_db.types";
 import FavoriteDonCard from "./FavoriteDonCard";
+import { useFullPropertyDons } from "@/provider/FullPropertyDonsContext";
+
+type Dons = {
+  id: number;
+  image: string;
+  title: string;
+  created_at: string;
+  dons_netas: DonsNetas[];
+  updated_at: string;
+  favorite: boolean;
+};
 
 const SelectFavorite = () => {
   const router = useRouter();
-  const { loginUser } = useLoginUser();
+
+  // 全てのプロパティが揃ったデータ
+  const { fullPropertyDons } = useFullPropertyDons();
 
   /**
    * State管理
@@ -27,10 +32,6 @@ const SelectFavorite = () => {
 
   // お気に入りに追加した丼
   const [favoriteDons, setFavoriteDons] = useState<DBDons[]>([]);
-  const [favoriteDonsId, setFavoriteDonsId] = useState<Array<number>>([]);
-
-  // ユーザーの注文履歴
-  const [orderDons, setOrderDons] = useState<DBOrders[]>([]);
 
   // donsデータから一つ選択して返す
   const onClickSelectDons = () => {
@@ -41,57 +42,12 @@ const SelectFavorite = () => {
 
   // 初回、DBからデータ取得
   useEffect(() => {
-    const getDons = async () => {
-      try {
-        // ローディング
-        setLoading(true);
-
-        // お気に入りテーブルからユーザーのdonsを取得
-        const allFavoriteDons: DBFavorits[] | null = await getAllFavoriteDons();
-
-        // ↑のデータ取得後の、配列操作・ステート更新
-        if (allFavoriteDons !== null) {
-          const fetchDataOnlyDons = allFavoriteDons.map((item) => item.dons);
-          // console.log("fetchDataOnlyDons", fetchDataOnlyDons);
-          setFavoriteDons(fetchDataOnlyDons);
-
-          const fetchDataOnlyDonIds = allFavoriteDons.map(
-            (item) => item.don_id
-          );
-          // console.log(fetchDataOnlyDonIds);
-          setFavoriteDonsId(fetchDataOnlyDonIds);
-
-          // 注文履歴の取得
-          const allOrders: DBOrders = await getAllOrder(
-            loginUser.id,
-            favoriteDonsId
-          );
-
-          if (allOrders !== null) {
-            console.log("allOrders", allOrders);
-
-            //   // const favoriteDonIds = favoriteDons.map((don) => don.id);
-            //   // console.log("favoriteDonIds", favoriteDonIds);
-            //   // const fliterOrderDons = allOrders.filter((don) =>
-            //   //   favoriteDonIds.includes(don.id)
-            //   // );
-
-            //   // console.log("fliterOrderDons", fliterOrderDons);
-            //   // setOrderDons(allOrders);
-          }
-        }
-      } catch (error) {
-        console.error("エラーが発生しました", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getDons();
+    console.log("fullPropertyDons", fullPropertyDons);
+    const filteredFavoriteDons = fullPropertyDons.filter(
+      (item: Dons) => item.favorite === true
+    );
+    setFavoriteDons(filteredFavoriteDons);
   }, []);
-
-  // useEffect(() => {
-  //   console.log("allOrders", allOrders);
-  // }, [setAllOrders]);
 
   return (
     <DefaultLayout pageTitle="お気に入りから選ぶ">
@@ -100,11 +56,7 @@ const SelectFavorite = () => {
       </SBGGrayInner>
       <VStack minW="100%" mb={10} spacing={4}>
         {favoriteDons.map((don) => (
-          <FavoriteDonCard
-            key={don.id}
-            don={don}
-            // onClick={onClickHandleFavorite}
-          />
+          <FavoriteDonCard key={don.id} don={don} />
         ))}
       </VStack>
       <BaseButton
