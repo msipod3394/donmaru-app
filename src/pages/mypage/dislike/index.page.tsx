@@ -60,26 +60,54 @@ export default function PageDislike() {
   // DB登録の実行
   const onSubmit = useCallback(async () => {
     try {
-      // 通信
+      // // DBに登録のないネタのみ登録
+      // const insertPromises = selectedNetas.map(async (netaId) => {
+      //   try {
+      //     // 既存の neta_id がデータベースに登録されているか確認
+      //     const existingRecord = await supabase
+      //       .from("dislikes")
+      //       .select("*")
+      //       .eq("neta_id", netaId);
+
+      //     // 返ってきたデータの中身を確認する式
+      //     const checkExistingRecord = existingRecord.data?.length === 0;
+
+      //     // 存在・登録チェック
+      //     if (existingRecord.data && checkExistingRecord) {
+      //       console.log("既存のレコードが存在しない場合、新しく挿入", netaId);
+
+      //       const { data, error } = await supabase
+      //         .from("dislikes")
+      //         .insert([{ neta_id: netaId, user_id: loginUser.id }]);
+      //     } else {
+      //       console.log("登録済みID", netaId);
+      //     }
+      //   } catch (insertError) {
+      //     console.error(
+      //       `netaId ${netaId} の挿入中にエラーが発生しました:`,
+      //       insertError
+      //     );
+      //   }
+      // });
+
+      // // 全ての更新処理が完了するのを待つ
+      // await Promise.all(insertPromises);
+
       // DBに登録のないネタのみ登録
-      const insertPromises = selectedNetas.map(async (netaId) => {
+
+      const deletePromises = selectedNetas.map(async (netaId) => {
         try {
+          const result = `(${selectedNetas.join(",")})`;
+
           // 既存の neta_id がデータベースに登録されているか確認
           const existingRecord = await supabase
             .from("dislikes")
             .select("*")
-            .eq("neta_id", netaId);
+            .not("neta_id", "in", result);
 
-          // 返ってきたデータの中身を確認する式
-          const checkExistingRecord = existingRecord.data?.length === 0;
+          console.log("existingRecord", existingRecord.data);
 
-          if (existingRecord.data && checkExistingRecord) {
-            console.log("既存のレコードが存在しない場合、新しく挿入", netaId);
 
-            const { data, error } = await supabase
-              .from("dislikes")
-              .insert([{ neta_id: netaId, user_id: loginUser.id }]);
-          }
         } catch (insertError) {
           console.error(
             `netaId ${netaId} の挿入中にエラーが発生しました:`,
@@ -88,10 +116,7 @@ export default function PageDislike() {
         }
       });
 
-      // 全ての挿入が完了するのを待つ
-      await Promise.all(insertPromises);
-
-      // ここで全ての非同期処理が正常に終了した後の処理を追加
+      await Promise.all(deletePromises);
     } catch (error) {
       console.error("一般的なエラーが発生しました", error);
     }
