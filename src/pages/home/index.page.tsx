@@ -30,7 +30,7 @@ const Home = () => {
 
   useEffect(() => {
     setFullDons(allData);
-    console.log("fullPropertyDons", fullPropertyDons);
+    // console.log("fullPropertyDons", fullPropertyDons);
   }, [allData]);
 
   // おまかせガチャ

@@ -1,6 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { DBDons, DBOrders } from "@/types/global_db.types";
-
+import { DBDons, DBNetas, DBOrders } from "@/types/global_db.types";
 
 // 全ての丼を取得
 export const getAllDons: () => Promise<DBDons[]> = async () => {
@@ -29,9 +28,9 @@ export const getNotFavoriteDons = async (favoriteid: number[]) => {
 };
 
 // 全てのネタを取得
-export const getAllNetas: () => Promise<DBDons[]> = async () => {
+export const getAllNetas: () => Promise<DBNetas[]> = async () => {
   const dons = await supabase.from("netas").select("*");
-  return dons.data as DBDons[];
+  return dons.data as DBNetas[];
 };
 
 // ユーザーの履歴を取得

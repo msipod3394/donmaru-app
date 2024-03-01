@@ -62,7 +62,7 @@ const SelectNeta: NextPage = () => {
     });
   };
 
-  // 実行
+  // DB登録の実行
   const onSubmit = useCallback(async () => {
     // チェック
     if (!selectedNetas || selectedNetas.length === 0) {
