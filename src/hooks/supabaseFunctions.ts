@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { DBDons, DBNetas, DBOrders } from "@/types/global_db.types";
+import { DBDislikes, DBDons, DBNetas, DBOrders } from "@/types/global_db.types";
 
 // 全ての丼を取得
 export const getAllDons: () => Promise<DBDons[]> = async () => {
@@ -31,6 +31,12 @@ export const getNotFavoriteDons = async (favoriteid: number[]) => {
 export const getAllNetas: () => Promise<DBNetas[]> = async () => {
   const dons = await supabase.from("netas").select("*");
   return dons.data as DBNetas[];
+};
+
+// 全てのネタを取得
+export const getAllDislikeNetas: () => Promise<DBDislikes[]> = async () => {
+  const dons = await supabase.from("dislikes").select("*");
+  return dons.data as DBDislikes[];
 };
 
 // ユーザーの履歴を取得
