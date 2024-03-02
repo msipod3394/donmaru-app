@@ -2,17 +2,13 @@ import styled from "styled-components";
 import { useRouter } from "next/router";
 import { Text, Stack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import {
-  getAllDons,
-  getAllFavoriteDons,
-  getAllOrder,
-} from "@/hooks/supabaseFunctions";
+import { getAllDislikeNetas } from "@/hooks/supabaseFunctions";
 import { useLoginUser } from "@/provider/LoginUserContext";
 import { useFullPropertyDons } from "@/provider/FullPropertyDonsContext";
-import { convertFormattedDate } from "@/hooks/convertFormattedDate";
 import { DefaultLayout } from "@/components/template/DefaultLayout";
 import { BaseButton } from "@/components/atoms/Buttons/BaseButton";
 import useFetchDonsData from "@/hooks/useFetchDonsData";
+import { DBDislikes, DBNetas } from "@/types/global_db.types";
 
 const Home = () => {
   const router = useRouter();
@@ -24,21 +20,76 @@ const Home = () => {
   const { loginUser } = useLoginUser();
 
   // 全てのプロパティが揃ったデータ
+  const { allData } = useFetchDonsData();
   const { fullPropertyDons, setFullDons } = useFullPropertyDons();
 
-  const { allData } = useFetchDonsData();
+  // 苦手ネタ
+  const [dislikeNetas, setDislikeNetas] = useState();
+
+  // 苦手ネタフィルタリング後（ここから1つ選ぶ）
+  const [filteredDons, setFilteredDons] = useState();
+
+  // 初回読み込み時
+  // 初回、netasテーブルを呼び出す
+  const fetchData = async () => {
+    try {
+      const fetchDislikeNetas: DBDislikes | null = await getAllDislikeNetas();
+      const dislikeNetaIds = fetchDislikeNetas.map(
+        (neta: DBDislikes) => neta.neta_id
+      );
+      setDislikeNetas(dislikeNetaIds);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleFilteredDons = () => {
+    if (Array.isArray(fullPropertyDons)) {
+      const filteredResultDons = fullPropertyDons.filter((item) => {
+        if (item.dons_netas !== null) {
+          const hasDislikedNeta = Object.values(item.dons_netas).every(
+            (netaItem) => {
+              return (
+                netaItem &&
+                netaItem.netas &&
+                !dislikeNetas.includes(netaItem.netas.id)
+              );
+            }
+          );
+
+          return hasDislikedNeta;
+        }
+      });
+
+      console.log("filteredResultDons", filteredResultDons);
+      setFilteredDons(filteredResultDons);
+
+      console.log("filteredDons", filteredDons);
+    }
+  };
 
   useEffect(() => {
-    setFullDons(allData);
-    // console.log("fullPropertyDons", fullPropertyDons);
-  }, [allData]);
+    const fetchData = async () => {
+      try {
+        const fetchDislikeNetas: DBDislikes | null = await getAllDislikeNetas();
+        const dislikeNetaIds = fetchDislikeNetas.map(
+          (neta: DBDislikes) => neta.neta_id
+        );
+        setDislikeNetas(dislikeNetaIds);
+        handleFilteredDons();
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  // おまかせガチャ
+    fetchData();
+  }, []);
+
+  // filteredDonsデータから一つ選択して返す
   const onClickSelectDons = () => {
-    // fullPropertyDonsデータから一つ選択して返す
-    const donsIndex =
-      Math.floor(Math.random() * fullPropertyDons.length - 1) + 1;
-    router.push(`/result/${donsIndex}`);
+    const donsIndex = Math.floor(Math.random() * filteredDons.length) + 1;
+    console.log("結果確認", donsIndex);
+    // router.push(`/result/${donsIndex}`);
   };
 
   return (
@@ -71,7 +122,6 @@ const Home = () => {
           >
             具材を選んでガチャ
           </BaseButton>
-          {/* <Link onClick={() => router.push(`/result`)}>おまかせガチャ</Link> */}
         </Stack>
       </Stack>
     </DefaultLayout>

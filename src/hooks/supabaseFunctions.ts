@@ -33,7 +33,7 @@ export const getAllNetas: () => Promise<DBNetas[]> = async () => {
   return dons.data as DBNetas[];
 };
 
-// 全てのネタを取得
+// 全ての苦手ネタを取得
 export const getAllDislikeNetas: () => Promise<DBDislikes[]> = async () => {
   const dons = await supabase.from("dislikes").select("*");
   return dons.data as DBDislikes[];

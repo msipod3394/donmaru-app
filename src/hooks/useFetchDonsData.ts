@@ -74,7 +74,7 @@ const useFetchDonsData = () => {
       });
 
       const latestOrders = Array.from(latestOrdersMap.values());
-      console.log("latestOrders", latestOrders);
+      // console.log("latestOrders", latestOrders);
       setOrder(latestOrders);
     } catch (error) {
       console.error("エラーが発生しました", error);
