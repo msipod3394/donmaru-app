@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useRouter } from "next/router";
-import { Text, Stack } from "@chakra-ui/react";
+import { Text, Stack, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { getAllDislikeNetas } from "@/hooks/supabaseFunctions";
 import { useLoginUser } from "@/provider/LoginUserContext";
@@ -30,7 +30,6 @@ const Home = () => {
   const [filteredDons, setFilteredDons] = useState();
 
   // 初回読み込み時
-  // 初回、netasテーブルを呼び出す
   const fetchData = async () => {
     try {
       const fetchDislikeNetas: DBDislikes | null = await getAllDislikeNetas();
@@ -38,10 +37,27 @@ const Home = () => {
         (neta: DBDislikes) => neta.neta_id
       );
       setDislikeNetas(dislikeNetaIds);
+      handleFilteredDons();
+        return dislikeNetaIds;
     } catch (error) {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    const fetchDataAndFilteredDons = async () => {
+      try {
+        const dislikeNetaIds = await fetchData();
+        console.log(dislikeNetaIds);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDataAndFilteredDons();
+  }, [fullPropertyDons]);
 
   const handleFilteredDons = () => {
     if (Array.isArray(fullPropertyDons)) {
@@ -56,40 +72,19 @@ const Home = () => {
               );
             }
           );
-
           return hasDislikedNeta;
         }
       });
 
       console.log("filteredResultDons", filteredResultDons);
       setFilteredDons(filteredResultDons);
-
-      console.log("filteredDons", filteredDons);
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const fetchDislikeNetas: DBDislikes | null = await getAllDislikeNetas();
-        const dislikeNetaIds = fetchDislikeNetas.map(
-          (neta: DBDislikes) => neta.neta_id
-        );
-        setDislikeNetas(dislikeNetaIds);
-        handleFilteredDons();
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // filteredDonsデータから一つ選択して返す
   const onClickSelectDons = () => {
-    const donsIndex = Math.floor(Math.random() * filteredDons.length) + 1;
-    console.log("結果確認", donsIndex);
-    // router.push(`/result/${donsIndex}`);
+    const donsIndex = Math.floor(Math.random() * filteredDons.length);
+    console.log("結果確認", filteredDons[donsIndex].id);
+    router.push(`/result/${filteredDons[donsIndex].id}`);
   };
 
   return (
@@ -100,35 +95,38 @@ const Home = () => {
           <br />
           海鮮丼を選びます 🐟
         </SText>
-        <Stack spacing="1.5rem">
-          <BaseButton
-            isDark={false}
-            isArrow={true}
-            onClick={() => onClickSelectDons()}
-          >
-            おまかせガチャ
-          </BaseButton>
-          <BaseButton
-            isDark={false}
-            isArrow={true}
-            onClick={() => router.push("/select/favorite")}
-          >
-            お気に入りからガチャ
-          </BaseButton>
-          <BaseButton
-            isDark={false}
-            isArrow={true}
-            onClick={() => router.push("/select/neta")}
-          >
-            具材を選んでガチャ
-          </BaseButton>
-        </Stack>
+        {loading ? (
+          <Spinner size="lg" color="teal.500" alignItems="center" />
+        ) : (
+          <Stack spacing="1.5rem">
+            <BaseButton
+              isDark={false}
+              isArrow={true}
+              onClick={() => onClickSelectDons()}
+            >
+              おまかせガチャ
+            </BaseButton>
+            <BaseButton
+              isDark={false}
+              isArrow={true}
+              onClick={() => router.push("/select/favorite")}
+            >
+              お気に入りからガチャ
+            </BaseButton>
+            <BaseButton
+              isDark={false}
+              isArrow={true}
+              onClick={() => router.push("/select/neta")}
+            >
+              具材を選んでガチャ
+            </BaseButton>
+          </Stack>
+        )}
       </Stack>
     </DefaultLayout>
   );
 };
 
-// Style
 const SText = styled(Text)`
   padding: 2rem;
   margin-bottom: 2rem;
